@@ -7,6 +7,7 @@ Resolution order for POST /analyze:
   4. nothing cached            -> InferenceUnavailable -> 503
 """
 
+import base64
 import hashlib
 import json
 import logging
@@ -19,6 +20,9 @@ from backend.app.schemas import AnalysisResult
 log = logging.getLogger(__name__)
 
 
+PNG_MAGIC = bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
+
+
 class InferenceUnavailable(Exception):
     pass
 
@@ -28,8 +32,15 @@ def _fresh_ids(result: AnalysisResult) -> AnalysisResult:
     return result.model_copy(update={"case_id": str(uuid.uuid4()), "created_at": datetime.now(timezone.utc)})
 
 
-def _load_mock() -> AnalysisResult:
-    return _fresh_ids(AnalysisResult.model_validate_json((FIXTURES_DIR / "mock_analysis.json").read_text()))
+def _load_mock(image_bytes: bytes | None = None) -> AnalysisResult:
+    result = _fresh_ids(AnalysisResult.model_validate_json((FIXTURES_DIR / "mock_analysis.json").read_text()))
+    if image_bytes:
+        # Echo the upload back as the plate so the UI shows the clinician's own slice under the
+        # fixture's boxes (which are in the fixture's 560x560 space) instead of a 1x1 placeholder.
+        mime = "image/png" if image_bytes.startswith(PNG_MAGIC) else "image/jpeg"
+        data_url = f"data:{mime};base64,{base64.b64encode(image_bytes).decode('ascii')}"
+        result = result.model_copy(update={"image": result.image.model_copy(update={"data_url": data_url})})
+    return result
 
 
 def _load_demo_cache(image_bytes: bytes) -> AnalysisResult | None:
@@ -48,7 +59,7 @@ def save_to_demo_cache(image_bytes: bytes, result: AnalysisResult) -> None:
 
 def analyze_image(image_bytes: bytes) -> AnalysisResult:
     if settings.use_mock_inference:
-        return _load_mock()
+        return _load_mock(image_bytes)
 
     try:
         from ml.pipeline import run_pipeline  # imported lazily so mock mode needs no ml deps

@@ -12,7 +12,8 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
 
 export default function App() {
   const { pathname } = useLocation();
-  const onPlate = pathname === "/";
+  // Landing and Analyze are full-bleed plates; History still sits in the pre-world container until it is rebuilt.
+  const onPlate = pathname === "/" || pathname.startsWith("/analyze");
 
   return (
     <div className="min-h-screen flex flex-col">

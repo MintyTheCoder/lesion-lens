@@ -1,6 +1,7 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { AnalysisResult, Lesion } from "../../api/types";
-import { PATTERN_LABEL } from "../../brand";
+import { LOCATION_LABEL, PATTERN_LABEL } from "../../brand";
+import { FRAME_CLASS, FrameFurniture, PlateCaption } from "./PlateFrame";
 
 export const PATTERN_HEX: Record<Lesion["pattern"], string> = {
   ms_typical: "#ff7a1a",
@@ -17,6 +18,14 @@ interface Props {
   action: ReactNode;
   /** Figure caption source note, e.g. "mock detections". */
   sourceNote?: string;
+  /** Plate number in the caption. */
+  plate?: string;
+  /** Extra caption spans after the counts (model line, timing, timestamp). */
+  caption?: ReactNode;
+  /** Show location and area under each legend entry: the clinician's read, not the landing's summary. */
+  legendDetail?: boolean;
+  /** Rendered in the legend when the result has no lesions: a finding, not an error. */
+  emptyLegend?: ReactNode;
 }
 
 interface Leader {
@@ -30,10 +39,8 @@ interface Leader {
 const LG = "(min-width: 1024px)";
 /** Rendered pixel size of the numeral on each box, held constant across frame sizes. */
 const NUMERAL_PX = 18;
-
-// Axial display, radiological convention (patient's right on the viewer's left).
-// Verify against the preprocessing orientation check in data/scripts/load_nifti.py before judging.
-const ORIENTATION = { top: "A", bottom: "P", left: "R", right: "L" };
+/** Above this many lesions the leaders would cross; the numerals on the boxes carry the link instead. */
+const MAX_LEADERS = 12;
 
 /**
  * An atlas plate: the slice is the figure, each lesion a numbered callout, and a hairline
@@ -41,7 +48,17 @@ const ORIENTATION = { top: "A", bottom: "P", left: "R", right: "L" };
  * the DOM so they stay attached at any width; below `lg` the legend stacks and the numerals
  * on the boxes carry the link instead.
  */
-export default function PlateFigure({ result, imageSrc, aside, action, sourceNote }: Props) {
+export default function PlateFigure({
+  result,
+  imageSrc,
+  aside,
+  action,
+  sourceNote,
+  plate = "Plate 1",
+  caption,
+  legendDetail = false,
+  emptyLegend,
+}: Props) {
   const { width, height } = result.image;
   const ordered = useMemo(
     () => [...result.lesions].sort((a, b) => a.bbox[1] - b.bbox[1] || a.bbox[0] - b.bbox[0]),
@@ -79,7 +96,7 @@ export default function PlateFigure({ result, imageSrc, aside, action, sourceNot
       const s = Math.min(fr.width / width, fr.height / height);
       setScale(s || 1);
 
-      if (!window.matchMedia(LG).matches) {
+      if (!window.matchMedia(LG).matches || ordered.length > MAX_LEADERS) {
         setLeaders([]);
         return;
       }
@@ -142,11 +159,12 @@ export default function PlateFigure({ result, imageSrc, aside, action, sourceNot
       <div className="lg:col-start-2 lg:row-start-1 order-1">{aside}</div>
 
       {/* Figure */}
-      <figure className="lg:col-start-1 lg:row-start-1 lg:row-span-3 order-2 min-w-0">
-        <div
-          ref={frameRef}
-          className="relative aspect-square w-full mx-auto lg:mx-0 border border-rule-strong bg-plate lg:max-w-[calc(100vh-12rem)]"
-        >
+      <figure
+        className={`lg:col-start-1 lg:row-start-1 lg:row-span-3 order-2 min-w-0 ${
+          ordered.length > MAX_LEADERS ? "lg:sticky lg:top-6 lg:self-start" : ""
+        }`}
+      >
+        <div ref={frameRef} className={`${FRAME_CLASS} border-rule-strong`}>
           {imgOk !== false ? (
             <img
               src={imageSrc}
@@ -225,17 +243,17 @@ export default function PlateFigure({ result, imageSrc, aside, action, sourceNot
           </svg>
         </div>
 
-        <figcaption className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-[0.85rem] leading-snug text-bone-dim">
-          <span className="wdth-narrow uppercase tracking-label text-bone">Plate 1</span>
+        <PlateCaption plate={plate}>
           <span>FLAIR, axial</span>
           <span className="tnum">
             {b.lesion_count} lesions detected — {b.ms_typical_count} MS-typical, {b.atypical_count} atypical or
             nonspecific
           </span>
           <span className="tnum">burden {b.total_area_pct}% of slice</span>
+          {caption}
           {sourceNote && <span>{sourceNote}</span>}
           {imgOk === false && <span>sample slice pending</span>}
-        </figcaption>
+        </PlateCaption>
       </figure>
 
       {/* Margin: legend */}
@@ -244,6 +262,9 @@ export default function PlateFigure({ result, imageSrc, aside, action, sourceNot
         aria-label="Lesion legend"
         onMouseLeave={() => setHover(null)}
       >
+        {ordered.length === 0 && emptyLegend && (
+          <li className="border-b border-rule py-5 text-[0.95rem] leading-relaxed text-bone-dim text-pretty">{emptyLegend}</li>
+        )}
         {ordered.map((l) => {
           const isActive = active === l.id;
           const faded = dimOthers && !isActive;
@@ -265,6 +286,11 @@ export default function PlateFigure({ result, imageSrc, aside, action, sourceNot
                   <span className="block text-[1.1rem] leading-tight font-medium" style={{ color }}>
                     {PATTERN_LABEL[l.pattern]}
                   </span>
+                  {legendDetail && (
+                    <span className="block mt-1.5 tnum text-[0.85rem] leading-snug text-bone">
+                      {LOCATION_LABEL[l.features.location]} · {l.area_px.toLocaleString()} px
+                    </span>
+                  )}
                   <span className="block mt-1.5 text-[0.95rem] leading-snug text-bone-dim text-pretty">
                     {l.reasons.join(" · ")}
                   </span>
@@ -316,24 +342,6 @@ export default function PlateFigure({ result, imageSrc, aside, action, sourceNot
           })}
         </svg>
       )}
-    </div>
-  );
-}
-
-/** Corner ticks and orientation letters in the frame margin: the plate reads as a plate even before the slice lands. */
-function FrameFurniture() {
-  const tick = "absolute w-4 h-4 border-rule-strong";
-  const letter = "absolute wdth-narrow tnum text-[0.72rem] leading-none tracking-label text-bone-dim select-none";
-  return (
-    <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-      <span className={`${tick} left-3 top-3 border-l border-t`} />
-      <span className={`${tick} right-3 top-3 border-r border-t`} />
-      <span className={`${tick} left-3 bottom-3 border-l border-b`} />
-      <span className={`${tick} right-3 bottom-3 border-r border-b`} />
-      <span className={`${letter} top-3 left-1/2 -translate-x-1/2`}>{ORIENTATION.top}</span>
-      <span className={`${letter} bottom-3 left-1/2 -translate-x-1/2`}>{ORIENTATION.bottom}</span>
-      <span className={`${letter} left-3 top-1/2 -translate-y-1/2`}>{ORIENTATION.left}</span>
-      <span className={`${letter} right-3 top-1/2 -translate-y-1/2`}>{ORIENTATION.right}</span>
     </div>
   );
 }

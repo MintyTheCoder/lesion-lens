@@ -1,7 +1,7 @@
 import os
 from pipeline_ms3seg import process_patient
 
-NIFTI_ROOT = "MS_100_patient_nifti/MS_100_patient_nifti"
+NIFTI_ROOT = "/MS_100_patient_nifti"
 
 available_patients = sorted(
     p for p in os.listdir(NIFTI_ROOT)

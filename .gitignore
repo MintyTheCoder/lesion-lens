@@ -1,0 +1,25 @@
+# datasets — do not commit raw MRI data
+data/
+*.nii
+*.nii.gz
+*.zip
+MSLesSeg*/
+MS3SEG*/
+mat_files/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# generated test artifacts
+test_slice.png
+test_bboxes.png
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

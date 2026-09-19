@@ -3,11 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
 import cv2
+from pathlib import Path
 
 patient = 9
+RAW_ROOT = Path(__file__).resolve().parents[1] / "raw" / "MSLesSeg Dataset" / "MSLesSeg Dataset"
 
-flair_path = rf"MSLesSeg Dataset/MSLesSeg Dataset/train/P{patient}/T1/P{patient}_T1_FLAIR.nii.gz"
-mask_path = rf"MSLesSeg Dataset/MSLesSeg Dataset/train/P{patient}/T1/P{patient}_T1_MASK.nii.gz"
+flair_path = RAW_ROOT / "train" / f"P{patient}" / "T1" / f"P{patient}_T1_FLAIR.nii.gz"
+mask_path = RAW_ROOT / "train" / f"P{patient}" / "T1" / f"P{patient}_T1_MASK.nii.gz"
 
 flair_img = nib.load(flair_path)
 flair_data = flair_img.get_fdata()

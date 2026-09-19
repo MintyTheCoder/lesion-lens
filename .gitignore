@@ -14,6 +14,7 @@ data/raw/
 *.pth
 *.zip
 test_*
+data/processed
 mslesseg_dataset
 
 # node

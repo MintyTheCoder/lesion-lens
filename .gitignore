@@ -9,6 +9,9 @@ MS3SEG*/
 MS_100_patient*/
 mat_files/
 
+# generated/derived data
+coco_export/
+
 # python
 __pycache__/
 *.pyc
@@ -19,10 +22,11 @@ env/
 # generated test artifacts
 test_slice.png
 test_bboxes.png
+test_multislice.png
+test_preprocessed.png
 
 # OS/editor
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-test_multislice.png

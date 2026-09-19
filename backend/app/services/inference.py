@@ -36,7 +36,7 @@ def _load_mock(image_bytes: bytes | None = None) -> AnalysisResult:
     result = _fresh_ids(AnalysisResult.model_validate_json((FIXTURES_DIR / "mock_analysis.json").read_text()))
     if image_bytes:
         # Echo the upload back as the plate so the UI shows the clinician's own slice under the
-        # fixture's boxes (which are in the fixture's 560x560 space) instead of a 1x1 placeholder.
+        # fixture's boxes (which are in the fixture's 256x256 space) instead of a 1x1 placeholder.
         mime = "image/png" if image_bytes.startswith(PNG_MAGIC) else "image/jpeg"
         data_url = f"data:{mime};base64,{base64.b64encode(image_bytes).decode('ascii')}"
         result = result.model_copy(update={"image": result.image.model_copy(update={"data_url": data_url})})

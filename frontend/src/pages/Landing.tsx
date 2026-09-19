@@ -4,8 +4,9 @@ import PlateAction from "../components/plate/PlateAction";
 import PlateFigure from "../components/plate/PlateFigure";
 import { HONESTY_LINE, NOT_A_DIAGNOSIS, PRODUCT_NAME } from "../brand";
 
-// Replace with a real sample slice (PNG/JPG, same preprocessing as the model sees) and its
-// real detections before judging. Until then the fixture's detections are shown over a labeled slot.
+// The sample slice in public/plate/. The fixture's boxes were placed on this slice's visible
+// hyperintensities by hand (see public/plate/README.md); swap in the model's own result via
+// save_to_demo_cache() once it runs so the caption can drop "not model output".
 const HERO_SLICE = "/plate/hero-slice.png";
 const hero = mock as AnalysisResult;
 
@@ -16,13 +17,13 @@ const KEY = [
     source: "Kaisey et al.",
   },
   {
-    figure: "72%",
-    statement: "of misdiagnosed patients are put on MS medication they do not need.",
+    figure: "33%",
+    statement: "stay misdiagnosed for ten years or more.",
     source: "Solomon et al., 2016",
   },
   {
-    figure: "33%",
-    statement: "stay misdiagnosed for ten years or more.",
+    figure: "72%",
+    statement: "of misdiagnosed patients are put on MS medication they do not need.",
     source: "Solomon et al., 2016",
   },
 ];
@@ -69,7 +70,7 @@ export default function Landing() {
         <PlateFigure
           result={hero}
           imageSrc={HERO_SLICE}
-          sourceNote="detections from the development fixture"
+          sourceNote="development fixture, not model output"
           aside={
             <div>
               <h2 className="wdth-wide text-balance font-medium tracking-plate leading-[1.06] text-[clamp(1.55rem,2.05vw,2.15rem)]">

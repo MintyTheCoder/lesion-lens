@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
 
-patient = "001"
+patient = "003"
 
 flair_path = rf"MS_100_patient_nifti.part1/MS_100_patient_nifti/{patient}/{patient}_FLAIR.nii.gz"
 mask_path = rf"MS_100_patient_masks/MS_100_patient_masks/abWMH_Masks/{patient}/{patient}_abWMH_Mask.nii.gz"
@@ -80,3 +80,23 @@ for z in range(mask_data.shape[2]):
 
 print("Slices with lesions:", len(all_patient_boxes))
 print("Total lesion boxes:", sum(len(v) for v in all_patient_boxes.values()))
+
+lesion_slice_ids = sorted(all_patient_boxes.keys())
+sample_slices = lesion_slice_ids[::max(1, len(lesion_slice_ids) // 9)][:9]
+
+fig, axes = plt.subplots(3, 3, figsize=(12, 12))
+for ax, z in zip(axes.flat, sample_slices):
+    ax.imshow(flair_data[:, :, z], cmap="gray")
+    for x_min, y_min, x_max, y_max in all_patient_boxes[z]:
+        rect = plt.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min,
+                              edgecolor="red", facecolor="none", linewidth=1.2)
+        ax.add_patch(rect)
+    ax.set_title(f"slice {z}", fontsize=9)
+    ax.axis("off")
+
+for ax in axes.flat[len(sample_slices):]:
+    ax.axis("off")
+
+plt.tight_layout()
+plt.savefig("test_multislice.png", dpi=150)
+print("Saved test_multislice.png")

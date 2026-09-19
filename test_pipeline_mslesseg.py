@@ -2,8 +2,9 @@ import nibabel as nib
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
+import cv2
 
-patient = 3
+patient = 9
 
 flair_path = rf"MSLesSeg Dataset/MSLesSeg Dataset/train/P{patient}/T1/P{patient}_T1_FLAIR.nii.gz"
 mask_path = rf"MSLesSeg Dataset/MSLesSeg Dataset/train/P{patient}/T1/P{patient}_T1_MASK.nii.gz"
@@ -100,3 +101,35 @@ for ax in axes.flat[len(sample_slices):]:
 plt.tight_layout()
 plt.savefig("test_multislice.png", dpi=150)
 print("Saved test_multislice.png")
+
+def preprocess_slice(slice_2d, target_size=(256, 256)):
+    norm = cv2.normalize(slice_2d, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(norm)
+
+    h, w = enhanced.shape
+    scale = min(target_size[0] / h, target_size[1] / w)
+    new_h, new_w = int(h * scale), int(w * scale)
+    resized = cv2.resize(enhanced, (new_w, new_h))
+
+    pad_h = target_size[0] - new_h
+    pad_w = target_size[1] - new_w
+    top, bottom = pad_h // 2, pad_h - pad_h // 2
+    left, right = pad_w // 2, pad_w - pad_w // 2
+    padded = cv2.copyMakeBorder(resized, top, bottom, left, right, cv2.BORDER_CONSTANT, value=0)
+
+    return padded
+
+test_slice_processed = preprocess_slice(flair_data[:, :, mid_slice])
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+axes[0].imshow(flair_data[:, :, mid_slice], cmap="gray")
+axes[0].set_title("Original")
+axes[0].axis("off")
+axes[1].imshow(test_slice_processed, cmap="gray")
+axes[1].set_title("Normalized + CLAHE + resized/padded")
+axes[1].axis("off")
+plt.tight_layout()
+plt.savefig("test_preprocessed.png", dpi=150)
+print("Saved test_preprocessed.png")

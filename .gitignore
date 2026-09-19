@@ -3,8 +3,10 @@ data/
 *.nii
 *.nii.gz
 *.zip
+*.rar
 MSLesSeg*/
 MS3SEG*/
+MS_100_patient*/
 mat_files/
 
 # python

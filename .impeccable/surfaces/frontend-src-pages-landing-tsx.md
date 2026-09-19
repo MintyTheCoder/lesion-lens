@@ -21,4 +21,4 @@ related_targets: ["frontend/src/App.tsx","frontend/index.html"]
 
 **Layout:** desktop two columns (figure ~⅔ + margin legend); mobile stacks, leaders hidden, numerals on boxes carry the link. Legend entries keyboard-reachable; pattern never carried by color alone.
 
-**Unresolved:** product name (Val United vs. MS Lesion Specificity — `PRODUCT_NAME` constant); hero slice file.
+**Unresolved:** hero slice file. (Product name resolved: "LesionLens" via `PRODUCT_NAME`.)

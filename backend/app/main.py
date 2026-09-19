@@ -14,7 +14,7 @@ from backend.app.routes import analyze, cases, validation
 
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(title="MS Lesion Specificity", version="0.1.0")
+app = FastAPI(title="LesionLens", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,

@@ -7,8 +7,8 @@ MIN_LESION_AREA = 3
 TARGET_SIZE = (256, 256)
 
 def load_patient(patient):
-    flair_path = f"MS_100_patient_nifti/{patient}/{patient}_FLAIR.nii.gz"
-    mask_path = f"MS_100_patient_masks/MS_100_patient_masks/abWMH_Masks/{patient}/{patient}_abWMH_Mask.nii.gz"
+    flair_path = f"../raw/MS_100_patient_nifti/{patient}/{patient}_FLAIR.nii.gz"
+    mask_path = f"../raw/MS_100_patient_masks/MS_100_patient_masks/abWMH_Masks/{patient}/{patient}_abWMH_Mask.nii.gz"
 
     flair_data = nib.load(flair_path).get_fdata()
     mask_data = nib.load(mask_path).get_fdata()

@@ -4,7 +4,7 @@ import random
 import cv2
 from run_ms3seg_pipeline import run_pipeline
 
-OUTPUT_DIR = "coco_export"
+OUTPUT_DIR = "../processed/coco_export"
 IMAGES_DIR = os.path.join(OUTPUT_DIR, "images")
 os.makedirs(IMAGES_DIR, exist_ok=True)
 

@@ -15,7 +15,12 @@ import numpy as np
 
 from backend.app.config import settings
 from backend.app.schemas import AnalysisResult, ImageInfo, Lesion, ModelInfo
-from data.scripts.preprocess import preprocess_slice
+# NOTE: data/pipeline/pipeline_ms3seg.py, not data/scripts/preprocess.py - the latter is
+# unfinished/unused (its export_coco.py::find_cases() was never implemented). The images
+# actually exported and trained on Roboflow went through pipeline_ms3seg's 256x256,
+# min-max-normalized preprocessing, so inference must match it or predictions silently
+# degrade. See ml/validate.py and data/pipeline/mslesseg_eval_prep.py, which use the same.
+from data.pipeline.pipeline_ms3seg import preprocess_slice
 from ml.burden import compute_burden
 from ml.heuristics import classify_pattern, score_lesion
 from ml.inference import detect
@@ -44,7 +49,7 @@ def _to_data_url(gray: np.ndarray) -> str:
 
 def run_pipeline(image_bytes: bytes) -> AnalysisResult:
     """preprocess -> detect (Roboflow API) -> heuristics per lesion -> burden -> AnalysisResult."""
-    gray = preprocess_slice(decode_upload(image_bytes))
+    gray, _scale, _offset = preprocess_slice(decode_upload(image_bytes))
     rgb = cv2.cvtColor(gray, cv2.COLOR_GRAY2RGB)
     h, w = gray.shape
 

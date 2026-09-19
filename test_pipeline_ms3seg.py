@@ -3,8 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
 
-flair_path = r"MS_100_patient_nifti.part1/MS_100_patient_nifti/001/001_FLAIR.nii.gz"
-mask_path = r"MS_100_patient_masks/MS_100_patient_masks/abWMH_Masks/001/001_abWMH_Mask.nii.gz"
+patient = "001"
+
+flair_path = rf"MS_100_patient_nifti.part1/MS_100_patient_nifti/{patient}/{patient}_FLAIR.nii.gz"
+mask_path = rf"MS_100_patient_masks/MS_100_patient_masks/abWMH_Masks/{patient}/{patient}_abWMH_Mask.nii.gz"
 
 flair_img = nib.load(flair_path)
 flair_data = flair_img.get_fdata()

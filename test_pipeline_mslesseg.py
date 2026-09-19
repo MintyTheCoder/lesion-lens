@@ -3,8 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
 
-flair_path = r"MSLesSeg Dataset/MSLesSeg Dataset/train/P9/T1/P9_T1_FLAIR.nii.gz"
-mask_path = r"MSLesSeg Dataset/MSLesSeg Dataset/train/P9/T1/P9_T1_MASK.nii.gz"
+patient = 1
+
+flair_path = rf"MSLesSeg Dataset/MSLesSeg Dataset/train/P{patient}/T1/P{patient}_T1_FLAIR.nii.gz"
+mask_path = rf"MSLesSeg Dataset/MSLesSeg Dataset/train/P{patient}/T1/P{patient}_T1_MASK.nii.gz"
 
 flair_img = nib.load(flair_path)
 flair_data = flair_img.get_fdata()

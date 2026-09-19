@@ -1,3 +1,71 @@
+/* Archivo, self-hosted so the demo does not depend on Wi-Fi. Variable: wght 100–900, wdth 62–125. */
+@font-face {
+  font-family: "Archivo";
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url("/fonts/Archivo-Variable.woff2") format("woff2");
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    font-feature-settings: "tnum" 1, "ss01" 0;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    font-stretch: 100%;
+  }
+  ::selection {
+    background: theme("colors.bone.DEFAULT");
+    color: theme("colors.plate.DEFAULT");
+  }
+  :focus-visible {
+    outline: 1px solid theme("colors.bone.DEFAULT");
+    outline-offset: 3px;
+  }
+}
+
+@layer utilities {
+  /* Archivo's width axis: atlas labels are narrow, plate numerals are wide. */
+  .wdth-narrow {
+    font-stretch: 78%;
+  }
+  .wdth-wide {
+    font-stretch: 112%;
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+/* Leaders draw in once, ordered by legend row. */
+@keyframes leader-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.leader {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: leader-draw 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .leader {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

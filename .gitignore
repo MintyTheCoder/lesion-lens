@@ -1,0 +1,25 @@
+# secrets
+.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# datasets — never commit MRI data
+data/raw/
+data/processed/
+*.nii
+*.nii.gz
+*.pth
+
+# node
+frontend/node_modules/
+frontend/dist/
+
+# editors / os
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

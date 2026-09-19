@@ -1,0 +1,65 @@
+{
+  "case_id": "mock-0001",
+  "created_at": "2026-09-19T12:00:00Z",
+  "image": {
+    "data_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+    "width": 560,
+    "height": 560
+  },
+  "lesions": [
+    {
+      "id": 0,
+      "bbox": [212, 168, 38, 16],
+      "confidence": 0.93,
+      "area_px": 480,
+      "pattern": "ms_typical",
+      "features": { "elongation": 2.6, "orientation_deg": 84, "location": "periventricular", "ovoid_score": 0.82 },
+      "reasons": ["periventricular", "elongated perpendicular to ventricle (Dawson's finger pattern)", "ovoid"]
+    },
+    {
+      "id": 1,
+      "bbox": [318, 190, 30, 14],
+      "confidence": 0.88,
+      "area_px": 330,
+      "pattern": "ms_typical",
+      "features": { "elongation": 2.2, "orientation_deg": 78, "location": "periventricular", "ovoid_score": 0.75 },
+      "reasons": ["periventricular", "elongated perpendicular to ventricle (Dawson's finger pattern)"]
+    },
+    {
+      "id": 2,
+      "bbox": [140, 300, 22, 20],
+      "confidence": 0.81,
+      "area_px": 350,
+      "pattern": "ms_typical",
+      "features": { "elongation": 1.4, "orientation_deg": 20, "location": "juxtacortical", "ovoid_score": 0.7 },
+      "reasons": ["juxtacortical", "ovoid"]
+    },
+    {
+      "id": 3,
+      "bbox": [400, 330, 12, 12],
+      "confidence": 0.71,
+      "area_px": 110,
+      "pattern": "atypical",
+      "features": { "elongation": 1.05, "orientation_deg": 5, "location": "deep_wm", "ovoid_score": 0.55 },
+      "reasons": ["deep white matter, punctate", "round rather than ovoid", "no ventricular orientation"]
+    },
+    {
+      "id": 4,
+      "bbox": [160, 380, 14, 13],
+      "confidence": 0.66,
+      "area_px": 140,
+      "pattern": "atypical",
+      "features": { "elongation": 1.1, "orientation_deg": 40, "location": "deep_wm", "ovoid_score": 0.5 },
+      "reasons": ["deep white matter, punctate", "round rather than ovoid"]
+    }
+  ],
+  "burden": {
+    "lesion_count": 5,
+    "total_area_px": 1410,
+    "total_area_pct": 0.9,
+    "ms_typical_count": 3,
+    "atypical_count": 2
+  },
+  "summary": "Five white-matter lesions were detected in this FLAIR slice. Three show an MS-typical pattern: two are periventricular and elongated perpendicular to the ventricle (a Dawson's finger configuration) and one is juxtacortical and ovoid. Two small, round, deep white-matter lesions show a nonspecific pattern that is also seen in migraine and small-vessel disease. Total lesion burden is 0.9% of the slice. These flags encode established radiological criteria for distinguishing MS-typical from nonspecific lesions; they are decision support for a clinician's review, not a diagnosis.",
+  "model": { "id": "mock/ms-lesion/0", "trained_on": "MS3SEG" }
+}

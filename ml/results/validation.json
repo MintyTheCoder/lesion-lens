@@ -1,0 +1,7 @@
+{
+  "note": "PLACEHOLDER numbers — replace by running `python -m ml.validate`. Do not show in the demo until real.",
+  "datasets": [
+    { "name": "MS3SEG (held-out val)", "n_scans": 0, "precision": 0.0, "recall": 0.0, "fp_per_scan": 0.0, "atypical_pct": 0.0 },
+    { "name": "MSLesSeg (never trained on)", "n_scans": 0, "precision": 0.0, "recall": 0.0, "fp_per_scan": 0.0, "atypical_pct": 0.0 }
+  ]
+}

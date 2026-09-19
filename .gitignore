@@ -29,3 +29,5 @@ Thumbs.db
 
 # typescript incremental build state
 frontend/tsconfig.tsbuildinfo
+
+ml/results/detection_cache/

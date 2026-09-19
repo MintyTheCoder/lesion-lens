@@ -20,7 +20,7 @@ from backend.app.schemas import LesionFeatures, Location, Pattern
 # --- Tunable thresholds. Start here, then adjust by eye on real detections. ---
 ELONGATION_MS_TYPICAL = 1.8      # major/minor axis ratio above which a lesion counts as "elongated"
 OVOID_MS_TYPICAL = 0.6           # solidity above which a lesion counts as "ovoid"
-PERIVENTRICULAR_FRAC = 0.22      # normalized distance from image center inside which = periventricular
+PERIVENTRICULAR_FRAC = 0.35      # normalized distance from image center inside which = periventricular
 JUXTACORTICAL_FRAC = 0.80        # normalized distance beyond which = juxtacortical (near the cortex)
 PERPENDICULAR_TOL_DEG = 30       # tolerance for "lesion axis points radially away from the ventricles"
 

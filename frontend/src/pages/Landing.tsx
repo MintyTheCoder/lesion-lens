@@ -2,7 +2,7 @@ import type { AnalysisResult } from "../api/types";
 import mock from "../mocks/analysis.json";
 import PlateAction from "../components/plate/PlateAction";
 import PlateFigure from "../components/plate/PlateFigure";
-import { HONESTY_LINE, NOT_A_DIAGNOSIS } from "../brand";
+import { HONESTY_LINE, NOT_A_DIAGNOSIS, PRODUCT_NAME } from "../brand";
 
 // Replace with a real sample slice (PNG/JPG, same preprocessing as the model sees) and its
 // real detections before judging. Until then the fixture's detections are shown over a labeled slot.
@@ -45,18 +45,37 @@ const CRITERIA = [
 export default function Landing() {
   return (
     <article>
+      {/* Masthead — the plate's title block. The name runs the full width one step above the key
+          figures, the thesis sits under it at statement scale, and the description keeps the margin. */}
+      <section className="px-4 sm:px-8 pt-16 pb-14 lg:pt-24 lg:pb-20">
+        <h1 className="wdth-wide font-semibold tracking-plate leading-[0.86] text-[clamp(3.5rem,14vw,9rem)] -ml-[0.04em]">
+          {PRODUCT_NAME}
+        </h1>
+        <div className="mt-8 lg:mt-12 grid grid-cols-1 gap-y-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(21rem,1fr)] lg:gap-x-16 lg:items-start">
+          <p className="text-balance font-normal tracking-plate leading-[1.15] text-[clamp(1.4rem,2.3vw,2.1rem)] max-w-[30ch]">
+            A clinician’s second look at a FLAIR slice, quantified.
+          </p>
+          <p className="text-pretty text-[0.95rem] leading-relaxed text-bone-dim max-w-[44ch] lg:pt-2">
+            Each lesion is boxed, counted, and read against the established criteria that separate an{" "}
+            <span className="text-bone whitespace-nowrap">MS-typical pattern</span> from a{" "}
+            <span className="text-bone">nonspecific one</span>. Decision support for a clinician. Never a
+            standalone diagnosis.
+          </p>
+        </div>
+      </section>
+
       {/* Plate 1 — the mechanism, shown */}
-      <section className="px-4 sm:px-8 pt-8 lg:pt-10 pb-16">
+      <section className="border-t border-rule px-4 sm:px-8 pt-10 lg:pt-12 pb-16">
         <PlateFigure
           result={hero}
           imageSrc={HERO_SLICE}
           sourceNote="detections from the development fixture"
           aside={
             <div>
-              <h1 className="wdth-wide text-balance font-medium tracking-plate leading-[1.06] text-[clamp(1.55rem,2.05vw,2.15rem)]">
+              <h2 className="wdth-wide text-balance font-medium tracking-plate leading-[1.06] text-[clamp(1.55rem,2.05vw,2.15rem)]">
                 Every white-matter lesion, boxed. Each one read against the criteria that separate{" "}
                 <span className="whitespace-nowrap">MS-typical</span> from nonspecific.
-              </h1>
+              </h2>
               <p className="mt-5 text-pretty text-[0.95rem] leading-relaxed text-bone-dim max-w-[44ch]">
                 Upload a FLAIR slice. Get back the lesion count, the burden, a pattern flag for every lesion with
                 the reasons behind it, and a plain-language note you can chart.
@@ -140,7 +159,7 @@ export default function Landing() {
 
       {/* Footnote and the action, restated. Nothing after this. */}
       <footer className="border-t border-rule px-4 sm:px-8 pt-12 pb-16">
-        <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(21rem,1fr)] lg:gap-x-16 items-end">
+        <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(26rem,1fr)] lg:gap-x-16 items-end">
           <dl className="grid gap-y-4 text-[0.85rem] leading-snug max-w-[64ch]">
             <div className="grid sm:grid-cols-[9rem_minmax(0,1fr)] gap-x-6 gap-y-1">
               <dt className="wdth-narrow uppercase tracking-label text-[0.72rem] text-bone-dim pt-[2px]">Trained on</dt>
@@ -155,8 +174,8 @@ export default function Landing() {
               <dd className="text-bone">{NOT_A_DIAGNOSIS}</dd>
             </div>
           </dl>
-          <div className="lg:justify-self-end">
-            <PlateAction to="/analyze" size="quiet">
+          <div className="w-full lg:justify-self-end">
+            <PlateAction to="/analyze" size="hero">
               Analyze a slice
             </PlateAction>
           </div>

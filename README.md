@@ -1,6 +1,6 @@
 # Val United
 
-team members
+## Team Members
 
 - Samuel Sleshi
 - Montgomery Brown

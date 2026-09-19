@@ -3,11 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
 import cv2
+from pathlib import Path
 
-patient = "001"
+patient = "006"
+RAW_ROOT = Path(__file__).resolve().parents[1] / "raw"
 
-flair_path = rf"MS_100_patient_nifti.part1/MS_100_patient_nifti/{patient}/{patient}_FLAIR.nii.gz"
-mask_path = rf"MS_100_patient_masks/MS_100_patient_masks/abWMH_Masks/{patient}/{patient}_abWMH_Mask.nii.gz"
+flair_path = RAW_ROOT / "MS_100_patient_nifti" / patient / f"{patient}_FLAIR.nii.gz"
+mask_path = RAW_ROOT / "MS_100_patient_masks" / "MS_100_patient_masks" / "abWMH_Masks" / patient / f"{patient}_abWMH_Mask.nii.gz"
 
 flair_img = nib.load(flair_path)
 flair_data = flair_img.get_fdata()

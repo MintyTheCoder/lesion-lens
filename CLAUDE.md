@@ -101,6 +101,12 @@ Upload flow → annotated image color-coded by pattern flag, count/area summary,
 **Phase 7 — Integration + rehearsal**
 End-to-end test on several real scans. Pick 2–3 demo cases: one clean detection, one clear pattern-flag contrast, one cross-dataset. Rehearse the 4-minute pitch timed, with the Section 4 answer verbatim.
 
+Checklist before calling this phase done:
+
+- Spot-check `classify_pattern()` output against real trained-model detections (not just synthetic/smoke-test boxes) before trusting `atypical_pct` in the validation panel — heuristic thresholds were tuned before the detector finished training.
+- Confirm `GEMINI_API_KEY` and `MONGODB_URI` are live and exercised for the actual demo/submission — `USE_MOCK_INFERENCE` and the template/in-memory fallbacks are dev conveniences, not what should be running when judging Best Use of Gemini API / Best Use of MongoDB Atlas.
+- Cite MS3SEG and MSLesSeg in the README and deck fine print (Section 5) — confirm this actually got done, not just planned.
+
 > **Checkpoint discipline:** if the core detector isn't training reliably by ~1/3 through build time, cut Phase 3 and ship detection + burden tracking only. A working detector beats a broken two-layer system.
 
 ---

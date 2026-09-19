@@ -196,7 +196,9 @@ ValUnited/
 ├── CLAUDE.md                     this brief
 ├── PLAN.md                       same content, human-facing copy
 ├── README.md                     team map, honesty rule, architecture diagram, run instructions
-├── requirements.txt              one shared Python env (no torch — inference is HTTP)
+├── requirements.txt              one shared Python env (no torch — inference is HTTP);
+│                                 already installed into ValUnited/.venv — activate that,
+│                                 don't create a second one, unless this is a fresh clone
 ├── .env.example                  ROBOFLOW_API_KEY, ROBOFLOW_MODEL_ID, ROBOFLOW_API_URL,
 │                                 GEMINI_API_KEY, MONGODB_URI, USE_MOCK_INFERENCE
 ├── .gitignore                    data/raw, data/processed, .env, .venv, node_modules
@@ -204,12 +206,33 @@ ValUnited/
 ├── data/                         ── DATA PIPELINE ──────────────────────────────────────
 │   ├── README.md                 briefing: dataset download, raw/ layout, steps, gotchas
 │   ├── raw/          (gitignored) NIfTI volumes as downloaded
-│   ├── processed/    (gitignored) <dataset>/{train,val}/images/*.png + annotations.json (COCO)
-│   └── scripts/                  run as `python -m data.scripts.<name>` from repo root
-│       ├── preprocess.py         WORKS. normalize → CLAHE → resize/pad 560. Also used at
-│       │                         inference time by ml/pipeline.py — never fork it.
-│       ├── masks_to_boxes.py     WORKS. connected components (8-conn) → [x,y,w,h]; drops <6px
-│       ├── load_nifti.py         NIfTI → axial slices. Verify orientation on one volume.
+│   ├── processed/    (gitignored) <dataset>_dataset/{train,valid,test}/*.png +
+│   │                              _annotations.coco.json (COCO, Roboflow-export layout)
+│   ├── pipeline/                 THE DEPLOYED PIPELINE. What's actually on Roboflow was
+│   │   │                         exported through this, not scripts/ below. Run as
+│   │   │                         `python -m data.pipeline.<name>` from repo root.
+│   │   ├── pipeline_ms3seg.py    WORKS. normalize (min-max) → CLAHE → resize/pad 256.
+│   │   │                         `preprocess_slice`/`extract_boxes`/`scale_boxes` are also
+│   │   │                         imported by ml/pipeline.py (inference) and
+│   │   │                         mslesseg_eval_prep.py below — never fork it.
+│   │   ├── export_coco.py        WORKS, already ran — produced processed/ms3seg_dataset/
+│   │   │                         {train,valid,test}. Patient-level split.
+│   │   └── mslesseg_eval_prep.py WORKS. `python -m data.pipeline.mslesseg_eval_prep`.
+│   │                             Raw MSLesSeg NIfTI (its train/ and test/ raw folders use
+│   │                             different layouts — handles both) → COCO at
+│   │                             processed/mslesseg_dataset/test/. Run once before
+│   │                             `python -m ml.validate` can score against MSLesSeg.
+│   └── scripts/                  UNFINISHED, NOT USED. `export_coco.py::find_cases()` here
+│                                  was never implemented, so nothing has actually been
+│                                  exported or uploaded through this path — don't treat it as
+│                                  canonical (it isn't what ml/pipeline.py or ml/validate.py
+│                                  use) until someone finishes it. Run as
+│                                  `python -m data.scripts.<name>` from repo root.
+│       ├── preprocess.py         normalize (percentile) → CLAHE → resize/pad 560 — NOT the
+│       │                         preprocessing actually used at inference; see data/pipeline/
+│       ├── masks_to_boxes.py     works standalone. connected components (8-conn) →
+│       │                         [x,y,w,h]; drops <6px
+│       ├── load_nifti.py         NIfTI → axial slices, canonical orientation — unused so far
 │       ├── export_coco.py        TODO find_cases(). Splits by PATIENT. --val-frac 1.0 for MSLesSeg
 │       └── upload_roboflow.py    TODO upload_split(). Uploads ms3seg ONLY.
 │
@@ -219,8 +242,14 @@ ValUnited/
 │   ├── heuristics.py             TODO score_lesion(), classify_pattern(). Thresholds at top.
 │   ├── burden.py                 TODO brain_area_px(). compute_burden() done.
 │   ├── pipeline.py               run_pipeline(bytes) -> AnalysisResult   ← THE INTEGRATION POINT
-│   ├── validate.py               TODO evaluate_dataset(). Writes results/validation.json
-│   └── results/validation.json   placeholder zeros; served by GET /validation
+│   │                             Preprocesses via data/pipeline/pipeline_ms3seg.py (256×256,
+│   │                             min-max norm) to match what's actually deployed on Roboflow.
+│   ├── validate.py               WORKS. `python -m ml.validate` — scores the trained model
+│   │                             against MS3SEG test + MSLesSeg via greedy IoU box matching
+│   │                             (0.3). Needs ROBOFLOW_API_KEY + ROBOFLOW_MODEL_ID in .env;
+│   │                             MSLesSeg needs data/pipeline/mslesseg_eval_prep.py run once
+│   │                             first. Writes results/validation.json.
+│   └── results/validation.json   placeholder zeros until validate.py is run for real; served by GET /validation
 │
 ├── backend/                      ── FASTAPI ────────────────────────────────────────────
 │   ├── README.md                 endpoints, inference resolution order, degradation
@@ -266,6 +295,7 @@ ValUnited/
 ### Conventions
 
 - Run all Python from the repo root as modules (`python -m ml.validate`, `uvicorn backend.app.main:app`). Imports are absolute (`from backend.app.schemas import ...`).
+- `ValUnited/.venv` already exists at the repo root, built from `requirements.txt` — activate it rather than creating a new one, unless you're on a fresh clone.
 - `USE_MOCK_INFERENCE=1` (the default) makes the whole app work with no keys and no model. Every integration degrades gracefully: no Gemini key → template summary; no Mongo URI → in-memory store.
-- `data/scripts/preprocess.py` is shared between training-set export and inference. If train and inference preprocessing drift, the model silently degrades.
+- `data/pipeline/pipeline_ms3seg.py` — not `data/scripts/preprocess.py`, which is unfinished and unused — is the preprocessing actually shared between the exported training set and inference (`ml/pipeline.py`), and also used by `data/pipeline/mslesseg_eval_prep.py`. If train and inference preprocessing drift, the model silently degrades.
 - Before judging: populate `backend/app/fixtures/demo_cache/` via `save_to_demo_cache()` for each rehearsed slice (see `ml/README.md` step 4).

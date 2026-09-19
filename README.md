@@ -29,18 +29,22 @@ There is **no migraine-patient data** in MS3SEG or MSLesSeg. The pattern flag ap
  MS3SEG NIfTI ──► slices ──►  Roboflow project ──► RF-DETR-B     POST /analyze ──────► ScanViewer
  masks ──► boxes ──► COCO      (hosted train)      (hosted API)   ├─ ml.pipeline         BurdenCard
                                      │                  │         ├─ Gemini summary      LesionTable
- MSLesSeg (sealed) ───────────► validate.py ◄───────────┘         ├─ MongoDB save        SummaryCard
-                                     │                            GET /validation ─────► ValidationPanel
-                                     └──► results/validation.json
+ MSLesSeg (sealed) ─► mslesseg_ ─► validate.py ◄───────────┘         ├─ MongoDB save        SummaryCard
+                       eval_prep       │                            GET /validation ─────► ValidationPanel
+                                       └──► results/validation.json
 ```
+
+Preprocessing (normalize → CLAHE → resize/pad) lives in `data/pipeline/pipeline_ms3seg.py` — that's the pipeline actually deployed to Roboflow, and `ml/pipeline.py` (live inference) and `data/pipeline/mslesseg_eval_prep.py` (MSLesSeg conversion) both import it. `data/scripts/` is a separate, unfinished attempt at the same thing — nothing has been exported or uploaded through it, so don't treat it as canonical.
 
 **The one integration point:** `ml/pipeline.py:run_pipeline(image_bytes) -> AnalysisResult`. The shape of `AnalysisResult` is defined once in `backend/app/schemas.py` and mirrored in `frontend/src/api/types.ts`. If you change the schema, change both files + `backend/app/fixtures/mock_analysis.json` in the same PR.
 
 ## Run it
 
+`ValUnited/.venv` already exists at the repo root, built from `requirements.txt` — activate it instead of creating a new one unless you're on a fresh clone.
+
 ```powershell
 # Python (one shared env for data/, ml/, backend/) — Python 3.11+
-python -m venv .venv
+python -m venv .venv            # skip if .venv already exists
 .venv\Scripts\activate
 pip install -r requirements.txt
 copy .env.example .env          # fill in keys you have; everything degrades gracefully without them
@@ -58,6 +62,20 @@ pytest backend/tests
 ```
 
 With `USE_MOCK_INFERENCE=1` in `.env` (the default), `/analyze` returns a canned result so the frontend works before the model exists.
+
+## Validate the model
+
+`ml/validate.py` scores the trained model against held-out MS3SEG and against MSLesSeg (never trained on) using greedy IoU box matching (0.3), and writes precision / recall / false-positives-per-scan to `ml/results/validation.json` — served at `GET /validation`, shown in the frontend's validation panel.
+
+```powershell
+# One-time: convert raw MSLesSeg NIfTI into the COCO eval format validate.py needs
+python -m data.pipeline.mslesseg_eval_prep
+
+# Score the model — needs ROBOFLOW_API_KEY + ROBOFLOW_MODEL_ID in .env (a real trained model)
+python -m ml.validate
+```
+
+`data.pipeline.mslesseg_eval_prep` reuses the same preprocessing/box-extraction as MS3SEG (`data/pipeline/pipeline_ms3seg.py`, the pipeline actually deployed to Roboflow) so predictions and ground truth land in the same coordinate space. It only needs to be run once (or again if `data/raw/MSLesSeg Dataset/` changes) — its output, `data/processed/mslesseg_dataset/test/`, is what `ml/validate.py` reads.
 
 ## Env vars
 

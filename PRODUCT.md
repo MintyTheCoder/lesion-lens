@@ -54,11 +54,11 @@ Lesion *detection* already works; this product adds the two missing pieces:
 
 **Fallback order if time runs out:** (1) cut the heuristic pattern layer → detection + burden only; (2) cut UI polish before model reliability; (3) cut MongoDB before Gemini.
 
-**Undecided:** product name (see Brand Commitments). Whether the landing page is `/` with Analyze at `/analyze` (FLOW.md) or Analyze stays at `/` (current App.tsx).
+**Undecided:** Whether the landing page is `/` with Analyze at `/analyze` (FLOW.md) or Analyze stays at `/` (current App.tsx).
 
 ## Brand Commitments
 
-- **Name — undecided.** Two candidates in the repo: **"Val United"** (README title, repo name) and **"MS Lesion Specificity"** (app header, CLAUDE.md). Record both; do not invent a third. Whichever is not the name may serve as a descriptor.
+- **Name — "LesionLens"** (decided 2026-09-19). Lives in `frontend/src/brand.ts` as `PRODUCT_NAME`, mirrored in `frontend/index.html` `<title>` and the FastAPI `title`. "MS Lesion Specificity" remains the project/brief descriptor (CLAUDE.md, README subtitle); "ValUnited" is only the repo name.
 - **Voice:** plain clinical language. Summaries are 3–5 sentences, no bullets, written so a radiologist can paste them into a note.
 - **Honesty rule — binding on every piece of UI copy and every Gemini prompt:**
   - ✅ "We encode established diagnostic criteria used to distinguish MS-typical lesions from nonspecific ones."

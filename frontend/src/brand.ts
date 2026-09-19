@@ -1,8 +1,8 @@
 // Product copy that must read identically everywhere. Do not paraphrase the honesty rule.
 
-// UNDECIDED (see PRODUCT.md → Brand Commitments): "Val United" vs "MS Lesion Specificity".
-// The header currently ships the descriptive name; flip this one constant when the team decides.
-export const PRODUCT_NAME = "MS Lesion Specificity";
+// Decided 2026-09-19 (see PRODUCT.md → Brand Commitments). This constant is the single source
+// of the name in the UI; the <title> in index.html and the FastAPI title mirror it by hand.
+export const PRODUCT_NAME = "LesionLens";
 export const DESCRIPTOR = "Decision support for a clinician's second look";
 
 export const HONESTY_LINE =

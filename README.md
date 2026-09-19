@@ -1,4 +1,4 @@
-# Val United — MS Lesion Specificity
+# LesionLens — MS Lesion Specificity
 
 **VTHacks 14.** A clinician-facing tool: upload a FLAIR MRI slice → every white-matter lesion is boxed, each is flagged **MS-typical** or **atypical/nonspecific** using established radiological criteria, and a lesion-burden score + plain-language summary come back. Cross-hospital validation shows whether it holds up on data the model never saw.
 
@@ -8,11 +8,9 @@ MS is misdiagnosed ~18% of the time, and the most common mimic is migraine. The 
 
 | Person | Owns | Branch |
 |---|---|---|
-| Samuel Sleshi | `data/` — datasets → COCO in Roboflow | `data` |
-| Montgomery Brown | `ml/` — Roboflow training, inference, heuristics, validation | `ml` |
+| Montgomery Brown | `data/` — datasets → COCO in Roboflow | `data` |
+| Samuel Sleshi | `ml/` — Roboflow training, inference, heuristics, validation | `ml` |
 | Nolawi Melese | `backend/` + `frontend/` | `app` |
-
-> Fix the name ↔ role mapping above if I guessed wrong.
 
 Work on your branch, PR into `main` whenever something runs. Each directory has its own README that is your briefing — read it first.
 

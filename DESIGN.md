@@ -1,5 +1,5 @@
 ---
-name: MS Lesion Specificity
+name: LesionLens
 description: A numbered MRI atlas plate. Matte black ground, bone hairlines and tabular numerals, Archivo across its width axis, orange and sky as the only chroma.
 colors:
   plate: "#0b0b0c"
@@ -122,7 +122,7 @@ components:
     rounded: "{rounded.none}"
 ---
 
-# Design System: MS Lesion Specificity
+# Design System: LesionLens
 
 ## Overview
 

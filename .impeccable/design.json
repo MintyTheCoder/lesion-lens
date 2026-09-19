@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-19T00:00:00Z",
+  "title": "Design System: MS Lesion Specificity",
+  "extensions": {
+    "colorMeta": {
+      "plate": {
+        "role": "primary",
+        "displayName": "Plate Black",
+        "canonical": "#0b0b0c",
+        "tonalRamp": ["oklch(15% 0.003 285)", "oklch(27% 0.003 285)", "oklch(38% 0.003 285)", "oklch(50% 0.003 285)", "oklch(61% 0.003 285)", "oklch(72% 0.003 285)", "oklch(84% 0.003 285)", "oklch(95% 0.003 285)"]
+      },
+      "plate-raised": {
+        "role": "neutral",
+        "displayName": "Plate Raised",
+        "canonical": "#121214",
+        "tonalRamp": ["oklch(15% 0.004 285)", "oklch(27% 0.004 285)", "oklch(38% 0.004 285)", "oklch(50% 0.004 285)", "oklch(61% 0.004 285)", "oklch(72% 0.004 285)", "oklch(84% 0.004 285)", "oklch(95% 0.004 285)"]
+      },
+      "bone": {
+        "role": "primary",
+        "displayName": "Bone",
+        "canonical": "#ece9e2",
+        "tonalRamp": ["oklch(15% 0.01 90)", "oklch(27% 0.01 90)", "oklch(38% 0.01 90)", "oklch(50% 0.01 90)", "oklch(61% 0.01 90)", "oklch(72% 0.01 90)", "oklch(84% 0.01 90)", "oklch(95% 0.01 90)"]
+      },
+      "bone-dim": {
+        "role": "neutral",
+        "displayName": "Bone Dim",
+        "canonical": "#a39f96",
+        "tonalRamp": ["oklch(15% 0.01 90)", "oklch(27% 0.01 90)", "oklch(38% 0.01 90)", "oklch(50% 0.01 90)", "oklch(61% 0.01 90)", "oklch(72% 0.01 90)", "oklch(84% 0.01 90)", "oklch(95% 0.01 90)"]
+      },
+      "bone-faint": {
+        "role": "neutral",
+        "displayName": "Bone Faint",
+        "canonical": "#6b675f",
+        "tonalRamp": ["oklch(15% 0.01 90)", "oklch(27% 0.01 90)", "oklch(38% 0.01 90)", "oklch(50% 0.01 90)", "oklch(61% 0.01 90)", "oklch(72% 0.01 90)", "oklch(84% 0.01 90)", "oklch(95% 0.01 90)"]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule (hairline, 16% bone)",
+        "canonical": "rgba(236, 233, 226, 0.16)",
+        "tonalRamp": ["rgba(236,233,226,0.08)", "rgba(236,233,226,0.16)", "rgba(236,233,226,0.24)", "rgba(236,233,226,0.32)", "rgba(236,233,226,0.42)", "rgba(236,233,226,0.56)", "rgba(236,233,226,0.7)", "rgba(236,233,226,1)"]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Rule Strong (boundary, 42% bone)",
+        "canonical": "rgba(236, 233, 226, 0.42)",
+        "tonalRamp": ["rgba(236,233,226,0.08)", "rgba(236,233,226,0.16)", "rgba(236,233,226,0.24)", "rgba(236,233,226,0.32)", "rgba(236,233,226,0.42)", "rgba(236,233,226,0.56)", "rgba(236,233,226,0.7)", "rgba(236,233,226,1)"]
+      },
+      "typical": {
+        "role": "secondary",
+        "displayName": "MS-typical Orange",
+        "canonical": "#ff7a1a",
+        "tonalRamp": ["oklch(15% 0.06 50)", "oklch(27% 0.1 50)", "oklch(38% 0.14 50)", "oklch(50% 0.17 50)", "oklch(61% 0.19 50)", "oklch(72% 0.19 50)", "oklch(84% 0.12 50)", "oklch(95% 0.04 50)"]
+      },
+      "atypical": {
+        "role": "secondary",
+        "displayName": "Atypical Sky",
+        "canonical": "#4fc3f7",
+        "tonalRamp": ["oklch(15% 0.04 225)", "oklch(27% 0.07 225)", "oklch(38% 0.09 225)", "oklch(50% 0.11 225)", "oklch(61% 0.12 225)", "oklch(72% 0.12 225)", "oklch(84% 0.09 225)", "oklch(95% 0.03 225)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The single h1 at the head of the plate margin. Wide Archivo (112%), balanced wrap." },
+      "headline": { "displayName": "Headline", "purpose": "Section h2s, max 24ch, wide Archivo." },
+      "key-figure": { "displayName": "Key Figure", "purpose": "The 18% / 72% / 33% plate-scale figures; tabular, wide, line-height 0.86." },
+      "statement": { "displayName": "Statement", "purpose": "The sentence beside each key figure (max 26ch) and, one step down, the honesty aside." },
+      "title": { "displayName": "Title", "purpose": "Pattern label in a legend row (in its pattern color); criteria names." },
+      "body": { "displayName": "Body", "purpose": "Running copy at 44ch in the margin, 62 to 64ch full width; bone-dim when supporting a display element." },
+      "caption": { "displayName": "Caption", "purpose": "Figcaption, confidence figures, footer definition list; tabular numerals." },
+      "numeral": { "displayName": "Numeral", "purpose": "Index number heading a legend or criteria row; tabular, line-height 1." },
+      "label": { "displayName": "Label", "purpose": "Narrow (78%) uppercase 0.08em: nav, citation sources, 'Plate 1', dt terms, orientation letters, the action text." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The only easing curve: leader draw, opacity dim, color inversion, arrow nudge." },
+      { "name": "duration-color", "value": "200ms", "purpose": "Color and background transitions on nav links and the action." },
+      { "name": "duration-dim", "value": "300ms", "purpose": "Opacity shift when a callout becomes active and the rest dim; arrow translate on the action." },
+      { "name": "leader-draw", "value": "900ms, 60ms stagger per legend row, stroke-dashoffset 1 to 0", "purpose": "Leaders draw in once on load; skipped under prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ],
+    "opacitySteps": [
+      { "name": "resting-ink", "value": "0.7", "purpose": "Leader stroke at rest and the action border: bone at 70%." },
+      { "name": "dim-legend-row", "value": "0.38", "purpose": "Inactive legend rows while another lesion is active." },
+      { "name": "dim-box", "value": "0.3", "purpose": "Inactive lesion boxes while another lesion is active." },
+      { "name": "dim-leader", "value": "0.25", "purpose": "Inactive leaders while another lesion is active." },
+      { "name": "active-fill", "value": "0.18", "purpose": "Pattern-color fill inside the active lesion box." }
+    ],
+    "strokes": [
+      { "name": "hairline", "value": "1px", "purpose": "All rules, leaders, frame, ticks, action border." },
+      { "name": "box", "value": "1.25px", "purpose": "Lesion box at rest; active leader." },
+      { "name": "box-active", "value": "2px", "purpose": "Active lesion box." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Plate Action (large)",
+      "kind": "button",
+      "refersTo": "action-large",
+      "description": "The plate's single action: a ruled box in narrow uppercase with an authored arrow; fills to bone and inverts on hover and focus. Full width of the margin column.",
+      "html": "<a href=\"#\" class=\"ds-action ds-action-large\"><span>Analyze a slice</span><svg width=\"22\" height=\"12\" viewBox=\"0 0 22 12\" fill=\"none\" aria-hidden=\"true\"><path d=\"M0 6h20M15 1l5 5-5 5\" stroke=\"currentColor\" stroke-width=\"1.25\" stroke-linecap=\"square\"/></svg></a>",
+      "css": ".ds-action { display: inline-flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid rgba(236,233,226,0.7); background: transparent; color: #ece9e2; font-family: Archivo, system-ui, sans-serif; font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.08em; line-height: 1; text-decoration: none; border-radius: 0; transition: background-color 200ms cubic-bezier(0.16,1,0.3,1), color 200ms cubic-bezier(0.16,1,0.3,1); } .ds-action svg { flex-shrink: 0; transition: transform 300ms cubic-bezier(0.16,1,0.3,1); } .ds-action:hover, .ds-action:focus-visible { background: #ece9e2; color: #0b0b0c; } .ds-action:hover svg { transform: translateX(4px); } .ds-action:focus-visible { outline: 1px solid #ece9e2; outline-offset: 3px; } .ds-action-large { width: 100%; padding: 16px 24px; font-size: 0.85rem; }"
+    },
+    {
+      "name": "Plate Action (quiet)",
+      "kind": "button",
+      "refersTo": "action-quiet",
+      "description": "The same action restated at the foot of the page, smaller and intrinsic width.",
+      "html": "<a href=\"#\" class=\"ds-action ds-action-quiet\"><span>Analyze a slice</span><svg width=\"22\" height=\"12\" viewBox=\"0 0 22 12\" fill=\"none\" aria-hidden=\"true\"><path d=\"M0 6h20M15 1l5 5-5 5\" stroke=\"currentColor\" stroke-width=\"1.25\" stroke-linecap=\"square\"/></svg></a>",
+      "css": ".ds-action { display: inline-flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid rgba(236,233,226,0.7); background: transparent; color: #ece9e2; font-family: Archivo, system-ui, sans-serif; font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.08em; line-height: 1; text-decoration: none; border-radius: 0; transition: background-color 200ms cubic-bezier(0.16,1,0.3,1), color 200ms cubic-bezier(0.16,1,0.3,1); } .ds-action svg { flex-shrink: 0; transition: transform 300ms cubic-bezier(0.16,1,0.3,1); } .ds-action:hover, .ds-action:focus-visible { background: #ece9e2; color: #0b0b0c; } .ds-action:hover svg { transform: translateX(4px); } .ds-action:focus-visible { outline: 1px solid #ece9e2; outline-offset: 3px; } .ds-action-quiet { padding: 12px 16px; font-size: 0.75rem; }"
+    },
+    {
+      "name": "Header Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "One 56px row closed by a hairline: wide wordmark and descriptor at left, narrow uppercase links with an underline active state at right.",
+      "html": "<header class=\"ds-header\"><a href=\"#\" class=\"ds-wordmark\"><span class=\"ds-wordmark-name\">MS Lesion Specificity</span><span class=\"ds-wordmark-desc\">Decision support for a clinician's second look</span></a><nav class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-link ds-nav-link-active\">Analyze</a><a href=\"#\" class=\"ds-nav-link\">History</a></nav></header>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 56px; padding: 0 32px; background: #0b0b0c; border-bottom: 1px solid rgba(236,233,226,0.16); font-family: Archivo, system-ui, sans-serif; color: #ece9e2; } .ds-wordmark { display: flex; align-items: baseline; gap: 12px; text-decoration: none; color: inherit; min-width: 0; } .ds-wordmark-name { font-stretch: 112%; font-weight: 600; letter-spacing: -0.03em; font-size: 0.95rem; line-height: 1; white-space: nowrap; } .ds-wordmark-desc { font-size: 0.72rem; line-height: 1; color: #a39f96; } .ds-nav { display: flex; align-items: center; gap: 24px; } .ds-nav-link { font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; line-height: 1; padding: 8px 0; text-decoration: none; color: #a39f96; border-bottom: 1px solid transparent; transition: color 200ms cubic-bezier(0.16,1,0.3,1), border-color 200ms cubic-bezier(0.16,1,0.3,1); } .ds-nav-link:hover { color: #ece9e2; border-bottom-color: rgba(236,233,226,0.42); } .ds-nav-link:focus-visible { outline: 1px solid #ece9e2; outline-offset: 3px; } .ds-nav-link-active { color: #ece9e2; border-bottom-color: #ece9e2; }"
+    },
+    {
+      "name": "Legend Row",
+      "kind": "custom",
+      "refersTo": "legend-row",
+      "description": "A ruled legend entry: index numeral, pattern label in its pattern color, reasons in bone-dim, confidence in tabular caption. Focusable button; inactive rows dim to 0.38.",
+      "html": "<ol class=\"ds-legend\"><li class=\"ds-legend-item\"><button type=\"button\" class=\"ds-legend-row\" aria-pressed=\"false\"><span class=\"ds-legend-num\">1</span><span class=\"ds-legend-text\"><span class=\"ds-legend-label ds-typical\">MS-typical pattern</span><span class=\"ds-legend-reasons\">periventricular · perpendicular to ventricle · ovoid</span></span><span class=\"ds-legend-conf\">0.91</span></button></li><li class=\"ds-legend-item\"><button type=\"button\" class=\"ds-legend-row\" aria-pressed=\"false\"><span class=\"ds-legend-num\">2</span><span class=\"ds-legend-text\"><span class=\"ds-legend-label ds-atypical\">Atypical or nonspecific pattern</span><span class=\"ds-legend-reasons\">deep white matter · round · no ventricular orientation</span></span><span class=\"ds-legend-conf\">0.78</span></button></li></ol>",
+      "css": ".ds-legend { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(236,233,226,0.16); background: #0b0b0c; font-family: Archivo, system-ui, sans-serif; color: #ece9e2; font-variant-numeric: tabular-nums; } .ds-legend-item { border-bottom: 1px solid rgba(236,233,226,0.16); } .ds-legend-row { display: grid; grid-template-columns: 2.5rem minmax(0,1fr) auto; column-gap: 12px; width: 100%; padding: 14px 0; text-align: left; background: transparent; border: 0; color: inherit; font: inherit; cursor: pointer; transition: opacity 300ms cubic-bezier(0.16,1,0.3,1); } .ds-legend:hover .ds-legend-row:not(:hover) { opacity: 0.38; } .ds-legend-row:focus-visible { outline: 1px solid #ece9e2; outline-offset: 3px; } .ds-legend-num { font-size: 1.5rem; line-height: 1; font-weight: 500; } .ds-legend-text { min-width: 0; } .ds-legend-label { display: block; font-size: 1.1rem; line-height: 1.25; font-weight: 500; } .ds-typical { color: #ff7a1a; } .ds-atypical { color: #4fc3f7; } .ds-legend-reasons { display: block; margin-top: 6px; font-size: 0.95rem; line-height: 1.375; color: #a39f96; } .ds-legend-conf { font-size: 0.85rem; line-height: 1; color: #a39f96; padding-top: 5px; }"
+    },
+    {
+      "name": "Key Row",
+      "kind": "custom",
+      "refersTo": "legend-row",
+      "description": "A plate-scale ruled row from the key: tabular wide figure, statement, and citation in label type.",
+      "html": "<ol class=\"ds-key\"><li class=\"ds-key-row\"><span class=\"ds-key-figure\">18%</span><div><p class=\"ds-key-statement\">of multiple sclerosis diagnoses are wrong.</p><p class=\"ds-key-source\">Kaisey et al.</p></div></li></ol>",
+      "css": ".ds-key { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(236,233,226,0.16); background: #0b0b0c; font-family: Archivo, system-ui, sans-serif; color: #ece9e2; } .ds-key-row { display: grid; grid-template-columns: auto minmax(0,1fr); column-gap: 48px; row-gap: 12px; align-items: start; padding: 36px 0; border-bottom: 1px solid rgba(236,233,226,0.16); } .ds-key-figure { font-stretch: 112%; font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: -0.03em; line-height: 0.86; font-size: clamp(3.75rem, 8vw, 6rem); min-width: 4.2ch; } .ds-key-statement { margin: 4px 0 0; line-height: 1.15; letter-spacing: -0.03em; font-size: clamp(1.4rem, 2.3vw, 2.1rem); max-width: 26ch; text-wrap: pretty; } .ds-key-source { margin: 12px 0 0; font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; color: #a39f96; }"
+    },
+    {
+      "name": "Plate Frame",
+      "kind": "card",
+      "refersTo": "plate-frame",
+      "description": "The figure frame: a square hairline (rule-strong) on the plate ground with 16px corner ticks and A/P/R/L orientation letters. One lesion callout shown in image-pixel SVG.",
+      "html": "<div class=\"ds-plate\"><span class=\"ds-tick ds-tick-tl\"></span><span class=\"ds-tick ds-tick-tr\"></span><span class=\"ds-tick ds-tick-bl\"></span><span class=\"ds-tick ds-tick-br\"></span><span class=\"ds-orient ds-orient-t\">A</span><span class=\"ds-orient ds-orient-b\">P</span><span class=\"ds-orient ds-orient-l\">R</span><span class=\"ds-orient ds-orient-r\">L</span><svg class=\"ds-plate-svg\" viewBox=\"0 0 240 240\" aria-hidden=\"true\"><g class=\"ds-callout\"><rect x=\"137\" y=\"97\" width=\"46\" height=\"30\" fill=\"transparent\" stroke=\"#ff7a1a\" stroke-width=\"1.25\" vector-effect=\"non-scaling-stroke\"/><line x1=\"137\" y1=\"112\" x2=\"129\" y2=\"112\" stroke=\"#ff7a1a\" stroke-width=\"1\" vector-effect=\"non-scaling-stroke\"/><text x=\"125\" y=\"112\" text-anchor=\"end\" dominant-baseline=\"central\" fill=\"#ff7a1a\" font-size=\"18\" font-weight=\"600\" font-family=\"Archivo, system-ui, sans-serif\">1</text></g></svg><p class=\"ds-slot\">FLAIR slice · sample pending</p></div>",
+      "css": ".ds-plate { position: relative; aspect-ratio: 1 / 1; width: 100%; max-width: 360px; background: #0b0b0c; border: 1px solid rgba(236,233,226,0.42); border-radius: 0; font-family: Archivo, system-ui, sans-serif; } .ds-tick { position: absolute; width: 16px; height: 16px; border-color: rgba(236,233,226,0.42); border-style: solid; border-width: 0; } .ds-tick-tl { left: 12px; top: 12px; border-left-width: 1px; border-top-width: 1px; } .ds-tick-tr { right: 12px; top: 12px; border-right-width: 1px; border-top-width: 1px; } .ds-tick-bl { left: 12px; bottom: 12px; border-left-width: 1px; border-bottom-width: 1px; } .ds-tick-br { right: 12px; bottom: 12px; border-right-width: 1px; border-bottom-width: 1px; } .ds-orient { position: absolute; font-stretch: 78%; font-variant-numeric: tabular-nums; font-size: 0.72rem; line-height: 1; letter-spacing: 0.08em; color: #a39f96; user-select: none; } .ds-orient-t { top: 12px; left: 50%; transform: translateX(-50%); } .ds-orient-b { bottom: 12px; left: 50%; transform: translateX(-50%); } .ds-orient-l { left: 12px; top: 50%; transform: translateY(-50%); } .ds-orient-r { right: 12px; top: 50%; transform: translateY(-50%); } .ds-plate-svg { position: absolute; inset: 0; width: 100%; height: 100%; } .ds-callout { cursor: pointer; transition: opacity 300ms cubic-bezier(0.16,1,0.3,1); } .ds-callout:hover rect { fill: #ff7a1a; fill-opacity: 0.18; stroke-width: 2; } .ds-callout:hover text { fill: #ece9e2; } .ds-slot { position: absolute; left: 0; right: 0; bottom: 36px; margin: 0; text-align: center; font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.85rem; color: #a39f96; }"
+    },
+    {
+      "name": "Footer Definition List",
+      "kind": "custom",
+      "refersTo": "legend-row",
+      "description": "Term in label type, definition in caption type; the row that carries the 'not a diagnosis' line in full bone.",
+      "html": "<dl class=\"ds-dl\"><div class=\"ds-dl-row\"><dt class=\"ds-dl-term\">Validated on</dt><dd class=\"ds-dl-def\">MSLesSeg, 115 multi-hospital scans, sealed from training. Reported as precision and false positives per scan.</dd></div><div class=\"ds-dl-row\"><dt class=\"ds-dl-term\">Use</dt><dd class=\"ds-dl-def ds-dl-def-strong\">Decision support for clinician review — not a diagnosis. Never shown to the patient.</dd></div></dl>",
+      "css": ".ds-dl { display: grid; row-gap: 16px; margin: 0; max-width: 64ch; background: #0b0b0c; font-family: Archivo, system-ui, sans-serif; font-size: 0.85rem; line-height: 1.375; color: #a39f96; } .ds-dl-row { display: grid; grid-template-columns: 9rem minmax(0,1fr); column-gap: 24px; } .ds-dl-term { font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.72rem; padding-top: 2px; color: #a39f96; } .ds-dl-def { margin: 0; color: #ece9e2; } .ds-dl-def-strong { color: #ece9e2; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Atlas Plate",
+    "overview": "The interface is a numbered MRI atlas plate in the Duvernoy/Talairach lineage. The scan is the figure; every lesion is a numbered callout joined by a hairline leader to a ruled legend in the margin; the misdiagnosis statistics are the plate's key. Nothing on the surface is decoration: every rule separates two things a clinician needs to tell apart, every numeral indexes a real object, and every color means a pattern flag. The ground is a matte black plate, the ink is bone white, and the page reads like a printed reference sheet held up to the light rather than a software product.\n\nDensity is editorial and unhurried. Sections are long ruled stanzas separated by single hairlines, not stacked panels. Type does the layering: Archivo's width axis is worked hard, with wide, tight-tracked display and plate-scale numerals against narrow, letterspaced uppercase labels, and secondary text steps down to a dimmed bone rather than a smaller size. The only motion is the leaders drawing in once on load and the brighten/dim gesture when a legend entry is hovered or focused: the atlas \"find the label\" moment.\n\nThe world refuses the glowing-brain hero, the feature-card grid, gradients, glass, and shadows. It also carries two copy commitments from the product: the honesty line about encoded criteria, and the \"decision support, not a diagnosis\" line, both rendered verbatim from frontend/src/brand.ts.",
+    "keyCharacteristics": [
+      "Matte black plate ground (#0b0b0c) with bone-white ink; no tonal surfaces, no fills at rest.",
+      "Hairlines do all the structure: 1px rules at 16% and 42% bone alpha, square frames, corner ticks, orthogonal leaders.",
+      "Two chroma roles only: orange for MS-typical, sky for atypical or nonspecific; always paired with a numeral and a label.",
+      "One variable face, Archivo, across its width axis: narrow (78%) labels, wide (112%) display and numerals, tabular figures everywhere a number appears.",
+      "Zero radius, zero shadow, zero gradient. Depth is opacity and stroke weight.",
+      "Motion is a single draw-in and a 300ms opacity shift, both on the standard out-curve, both respecting reduced motion."
+    ],
+    "rules": [
+      { "name": "The Two Inks Rule", "body": "Orange and sky are the only chroma on any surface, and each appears only where a lesion's pattern flag is being stated: box, numeral, tick, legend label, criteria name. No accent color for links, buttons, states, charts, or brand. Bone and its alphas carry every other role.", "section": "colors" },
+      { "name": "The Never Alone Rule", "body": "Pattern is never conveyed by color alone. Every orange or sky element sits beside a numeral and its label text (\"MS-typical pattern\" / \"Atypical or nonspecific pattern\"), so the flag survives monochrome and color-blind viewing.", "section": "colors" },
+      { "name": "The No Fill Rule", "body": "Nothing on the page has a filled background at rest. The single exception is the action on hover and focus, which fills to bone and inverts to plate text; that inversion is what makes it read as the one thing to press.", "section": "colors" },
+      { "name": "The Width Axis Rule", "body": "Hierarchy is carried by width and tracking before size. Display and numerals go wide and tight; labels go narrow and open; body sits at 100%. Do not introduce a second family or a monospace for numbers; Archivo's tabular figures are the numeric voice.", "section": "typography" },
+      { "name": "The Tabular Rule", "body": "Every number that a clinician might compare (counts, percentages, confidence, plate numerals) is set with tabular numerals so columns align and hover states do not reflow.", "section": "typography" },
+      { "name": "The Flat Plate Rule", "body": "Surfaces never lift. If two things must be distinguished in depth, use a hairline between them or dim one of them; never a shadow, a lighter panel, or a blur.", "section": "elevation" },
+      { "name": "The Dim The Rest Rule", "body": "Emphasis is achieved by lowering everything else, not raising the target. Hover or focus brightens one callout to full bone stroke and dims its neighbours; the target's own scale, weight, and position do not change.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do set the ground to Plate Black and every structural line as a 1px hairline in rule (16%) or rule-strong (42%); use rule-strong only for boundaries (frames, ticks, the nav hover underline).",
+      "Do pair every orange or sky element with a numeral and its exact label text (\"MS-typical pattern\" / \"Atypical or nonspecific pattern\"); the Never Alone Rule is load-bearing for clinical use.",
+      "Do use Archivo's width axis for hierarchy: wide (112%) and -0.03em for display and figures, narrow (78%) uppercase with 0.08em for labels, 100% for body.",
+      "Do set every comparable number in tabular numerals and hold plate numerals at a constant rendered 18px.",
+      "Do build containers as ruled lists (top rule on the list, bottom rule per row) and reuse the 1.5fr / minmax(21rem, 1fr) margin grid from lg.",
+      "Do keep the action a bordered square that fills to bone and inverts on hover and focus; it is the only fill on the page.",
+      "Do carry the honesty line and the \"decision support, not a diagnosis\" line verbatim from frontend/src/brand.ts wherever the product is described.",
+      "Do transition state with opacity and stroke on cubic-bezier(0.16, 1, 0.3, 1) at 200 to 300ms, and respect prefers-reduced-motion."
+    ],
+    "donts": [
+      "Don't add glow, gradient, glass, blur, or box-shadow anywhere; the plate is flat.",
+      "Don't use cards, tiles, or filled panels; separate content with a hairline instead.",
+      "Don't introduce any chroma beyond orange (MS-typical) and sky (atypical), and never use either for a non-pattern role such as a link, button, or brand mark.",
+      "Don't round a corner; the radius scale has one step and it is 0px.",
+      "Don't add eyebrows or kicker lines above headings; the only uppercase labels are functional atlas marginalia (plate number, citation source, definition terms, orientation letters, nav).",
+      "Don't use icon-set glyphs; the arrow is an authored SVG stroke, and any future mark should be drawn the same way.",
+      "Don't write \"accuracy\" as a metric; the words are precision and false positives per scan, and the pattern flag is reported descriptively.",
+      "Don't show stat counters, brain renders, \"AI-powered\" copy, or fabricated validation numbers, logos, or testimonials."
+    ]
+  }
+}

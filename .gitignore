@@ -23,3 +23,6 @@ frontend/dist/
 .idea/
 .DS_Store
 Thumbs.db
+
+# typescript incremental build state
+frontend/tsconfig.tsbuildinfo

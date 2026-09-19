@@ -24,9 +24,10 @@ def _get_collection():
     return _collection
 
 
-async def save_case(result: AnalysisResult) -> None:
+async def save_case(result: AnalysisResult, session_id: str) -> None:
     doc = result.model_dump(mode="json")
     doc["_id"] = result.case_id
+    doc["session_id"] = session_id
     col = _get_collection()
     if col is None:
         _memory[result.case_id] = doc
@@ -38,18 +39,22 @@ async def save_case(result: AnalysisResult) -> None:
         _memory[result.case_id] = doc
 
 
-async def list_cases(limit: int = 50) -> list[CaseSummary]:
+async def list_cases(session_id: str, limit: int = 50) -> list[CaseSummary]:
     col = _get_collection()
     docs: list[dict]
     if col is None:
-        docs = list(_memory.values())
+        docs = [d for d in _memory.values() if d.get("session_id") == session_id]
     else:
         try:
-            cursor = col.find({}, {"case_id": 1, "created_at": 1, "burden": 1}).sort("created_at", -1).limit(limit)
+            cursor = (
+                col.find({"session_id": session_id}, {"case_id": 1, "created_at": 1, "burden": 1})
+                .sort("created_at", -1)
+                .limit(limit)
+            )
             docs = await cursor.to_list(length=limit)
         except Exception as exc:  # noqa: BLE001
             log.warning("Mongo list failed (%s); using memory", exc)
-            docs = list(_memory.values())
+            docs = [d for d in _memory.values() if d.get("session_id") == session_id]
     docs.sort(key=lambda d: d["created_at"], reverse=True)
     return [
         CaseSummary(

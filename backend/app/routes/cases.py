@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Header, HTTPException
 
 from backend.app.schemas import AnalysisResult, CaseSummary
 from backend.app.services import db
@@ -7,8 +7,8 @@ router = APIRouter()
 
 
 @router.get("/cases", response_model=list[CaseSummary])
-async def list_cases() -> list[CaseSummary]:
-    return await db.list_cases()
+async def list_cases(x_session_id: str = Header(...)) -> list[CaseSummary]:
+    return await db.list_cases(x_session_id)
 
 
 @router.get("/cases/{case_id}", response_model=AnalysisResult)

@@ -9,10 +9,11 @@ __pycache__/
 
 # datasets — never commit MRI data
 data/raw/
-data/processed/
 *.nii
 *.nii.gz
 *.pth
+*.zip
+test_*
 
 # node
 frontend/node_modules/

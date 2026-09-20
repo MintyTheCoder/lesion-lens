@@ -12,9 +12,9 @@ export interface SampleSlice {
 
 export const SAMPLES: SampleSlice[] = [
   {
-    file: "/samples/clean-detection.png",
-    name: "Clean detection",
-    description: "A slice where every lesion is periventricular and ovoid: the MS-typical pattern throughout.",
+  file: "/samples/clean-detection.png",
+  name: "Clean detection",
+  description: "Every lesion in this slice is periventricular and MS-typical, including a classic Dawson's finger.",
   },
   {
     file: "/samples/pattern-contrast.png",

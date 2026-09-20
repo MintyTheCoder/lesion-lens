@@ -210,8 +210,8 @@ export default function PlateFigure({
       <div className="lg:col-start-2 lg:row-start-1 order-1">{aside}</div>
 
       {/* Figure */}
-      <figure
-        className={`lg:col-start-1 lg:row-start-1 lg:row-span-3 order-2 min-w-0 ${
+            <figure
+        className={`lg:col-start-1 lg:row-start-1 lg:row-span-3 order-2 min-w-0 lg:max-w-[calc(100vh-12rem)] ${
           ordered.length > MAX_LEADERS ? "lg:sticky lg:top-6 lg:self-start" : ""
         }`}
       >

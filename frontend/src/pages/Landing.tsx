@@ -1,14 +1,13 @@
 import type { AnalysisResult } from "../api/types";
-import mock from "../mocks/analysis.json";
+import heroResult from "../mocks/hero.json";
 import PlateAction from "../components/plate/PlateAction";
 import PlateFigure from "../components/plate/PlateFigure";
 import { HONESTY_LINE, NOT_A_DIAGNOSIS, PRODUCT_NAME } from "../brand";
 
-// The sample slice in public/plate/. The fixture's boxes were placed on this slice's visible
-// hyperintensities by hand (see public/plate/README.md); swap in the model's own result via
-// save_to_demo_cache() once it runs so the caption can drop "not model output".
+// The sample slice in public/plate/. Real RF-DETR detections on this slice, generated via
+// dev-scripts/find_hero_detections.py and copied to src/mocks/hero.json.
 const HERO_SLICE = "/plate/hero-slice.png";
-const hero = mock as AnalysisResult;
+const hero = heroResult as AnalysisResult;
 
 // Kaisey M, et al. Incidence of multiple sclerosis misdiagnosis in referrals to two academic
 // centers. Mult Scler Relat Disord. 2019;30:51-56. 241 referrals; 17% (Cedars-Sinai) and 19%
@@ -82,7 +81,7 @@ export default function Landing() {
         <PlateFigure
           result={hero}
           imageSrc={HERO_SLICE}
-          sourceNote="development fixture, not model output"
+          sourceNote="RF-DETR detection, MS3SEG test slice"
           aside={
             <div>
               <h2 className="wdth-wide text-balance font-medium tracking-plate leading-[1.06] text-[clamp(1.55rem,2.05vw,2.15rem)]">

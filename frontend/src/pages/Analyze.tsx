@@ -240,7 +240,7 @@ export default function Analyze() {
             </div>
 
             {/* Figure: the frame, empty or holding the slice */}
-            <figure className="lg:col-start-1 lg:row-start-1 lg:row-span-3 order-2 min-w-0">
+            <figure className="lg:col-start-1 lg:row-start-1 lg:row-span-3 order-2 min-w-0 lg:max-w-[calc(100vh-12rem)]">
               <PlateIntake
                 onFile={submit}
                 onChoose={chooseFile}

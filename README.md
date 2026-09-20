@@ -94,6 +94,8 @@ FastAPI · React + Vite + Tailwind · RF-DETR-B fine-tuned via Roboflow Train (f
 
 ## Data
 
+Trained on [MS3SEG](https://www.google.com/search?q=MS3SEG+dataset) and cross-dataset validated on [MSLesSeg](https://www.google.com/search?q=MSLesSeg+dataset) — both public MRI lesion-segmentation datasets. MSLesSeg was never used in training.
+
 - **MS3SEG** — training. ~2,000 annotated FLAIR slices; abnormal-WMH class converted to boxes.
 - **MSLesSeg** — validation only. 115 scans, multi-hospital, never uploaded to the training project.
 

@@ -1,4 +1,4 @@
-import type { AnalysisResult, CaseSummary, ValidationReport } from "./types";
+import type { AnalysisResult, BurdenTrend, CaseSummary, ValidationReport } from "./types";
 
 // Vite proxies /api -> http://localhost:8000 (see vite.config.ts).
 const BASE = "/api";
@@ -33,6 +33,10 @@ export async function analyze(file: File): Promise<AnalysisResult> {
 
 export async function getCases(): Promise<CaseSummary[]> {
   return handle(await fetch(`${BASE}/cases`, { headers: { "X-Session-Id": SESSION_ID } }));
+}
+
+export async function getBurdenTrend(): Promise<BurdenTrend> {
+  return handle(await fetch(`${BASE}/cases/trend`, { headers: { "X-Session-Id": SESSION_ID } }));
 }
 
 export async function getCase(caseId: string): Promise<AnalysisResult> {

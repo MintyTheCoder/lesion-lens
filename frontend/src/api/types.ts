@@ -69,3 +69,17 @@ export interface ValidationReport {
   datasets: DatasetValidation[];
   note: string;
 }
+
+export interface BurdenPoint {
+  case_id: string;
+  created_at: string;
+  lesion_count: number;
+  total_area_pct: number;
+  atypical_count: number;
+}
+
+export interface BurdenTrend {
+  session_id: string;
+  points: BurdenPoint[];
+  direction: "rising" | "stable" | "falling" | "insufficient_data";
+}

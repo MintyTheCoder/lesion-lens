@@ -1,19 +1,55 @@
 import { useEffect, useState } from "react";
-import { getCase, getCases } from "../api/client";
-import type { AnalysisResult, CaseSummary } from "../api/types";
+import { getBurdenTrend, getCase, getCases } from "../api/client";
+import type { AnalysisResult, BurdenTrend, CaseSummary } from "../api/types";
 import CaseView from "../components/case/CaseView";
 import PlateAction from "../components/plate/PlateAction";
 import { PLATE_GRID } from "../components/plate/PlateFrame";
+
+const DIRECTION_LABEL: Record<BurdenTrend["direction"], string> = {
+  rising: "Rising",
+  stable: "Stable",
+  falling: "Falling",
+  insufficient_data: "Not enough data yet",
+};
+
+function Sparkline({ points }: { points: BurdenTrend["points"] }) {
+  const w = 220;
+  const h = 40;
+  const values = points.map((p) => p.total_area_pct);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const step = points.length > 1 ? w / (points.length - 1) : 0;
+  const coords = values.map((v, i) => {
+    const x = i * step;
+    const y = h - ((v - min) / range) * h;
+    return `${x},${y}`;
+  });
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="text-bone" aria-hidden="true">
+      <polyline
+        points={coords.join(" ")}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 /** Cases saved to MongoDB Atlas. Opening one reuses CaseView, the same plate Analyze renders on
  * a finished read, so a case looks identical whether you're seeing it fresh or reopening it. */
 export default function History() {
   const [cases, setCases] = useState<CaseSummary[]>([]);
+  const [trend, setTrend] = useState<BurdenTrend | null>(null);
   const [open, setOpen] = useState<AnalysisResult | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   useEffect(() => {
     getCases().then(setCases).catch(console.error);
+    getBurdenTrend().then(setTrend).catch(console.error);
   }, []);
 
   const openCase = (id: string) => {
@@ -52,6 +88,25 @@ export default function History() {
           </p>
         </div>
       </section>
+
+      {trend && trend.points.length >= 2 && (
+        <section className="border-t border-rule px-4 sm:px-8 pt-10 lg:pt-12 pb-10">
+          <div className={`${PLATE_GRID} lg:items-start`}>
+            <h2 className="wdth-wide font-medium tracking-plate leading-[1.06] text-[clamp(1.1rem,1.6vw,1.4rem)]">
+              Burden over time
+            </h2>
+            <div className="flex flex-col gap-3 lg:pt-1">
+              <p className="text-pretty text-[0.95rem] leading-relaxed text-bone-dim max-w-[44ch]">
+                Total lesion area across {trend.points.length} saved cases:{" "}
+                <span className={trend.direction === "rising" ? "text-atypical" : "text-bone"}>
+                  {DIRECTION_LABEL[trend.direction]}
+                </span>
+              </p>
+              <Sparkline points={trend.points} />
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="border-t border-rule px-4 sm:px-8 pt-10 lg:pt-12 pb-16">
         {cases.length === 0 ? (

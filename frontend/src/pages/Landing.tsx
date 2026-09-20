@@ -10,21 +10,33 @@ import { HONESTY_LINE, NOT_A_DIAGNOSIS, PRODUCT_NAME } from "../brand";
 const HERO_SLICE = "/plate/hero-slice.png";
 const hero = mock as AnalysisResult;
 
+// Kaisey M, et al. Incidence of multiple sclerosis misdiagnosis in referrals to two academic
+// centers. Mult Scler Relat Disord. 2019;30:51-56. 241 referrals; 17% (Cedars-Sinai) and 19%
+// (UCLA) misdiagnosed, migraine the most common alternate diagnosis.
+const KAISEY_2019 = "https://doi.org/10.1016/j.msard.2019.01.048";
+// Solomon AJ, et al. The contemporary spectrum of multiple sclerosis misdiagnosis: a multicenter
+// study. Neurology. 2016;87(13):1393-1399. 110 misdiagnosed patients; 33% misdiagnosed >=10 years,
+// 72% received disease-modifying therapy.
+const SOLOMON_2016 = "https://doi.org/10.1212/WNL.0000000000003152";
+
 const KEY = [
   {
     figure: "18%",
     statement: "of multiple sclerosis diagnoses are wrong.",
-    source: "Kaisey et al.",
+    source: "Kaisey et al., 2019",
+    href: KAISEY_2019,
   },
   {
     figure: "33%",
     statement: "stay misdiagnosed for ten years or more.",
     source: "Solomon et al., 2016",
+    href: SOLOMON_2016,
   },
   {
     figure: "72%",
     statement: "of misdiagnosed patients are put on MS medication they do not need.",
     source: "Solomon et al., 2016",
+    href: SOLOMON_2016,
   },
 ];
 
@@ -103,7 +115,16 @@ export default function Landing() {
               </span>
               <div className="md:pt-1">
                 <p className="text-pretty leading-[1.15] tracking-plate text-[clamp(1.4rem,2.3vw,2.1rem)] max-w-[26ch]">{k.statement}</p>
-                <p className="mt-3 wdth-narrow uppercase tracking-label text-[0.72rem] text-bone-dim">{k.source}</p>
+                <p className="mt-3 wdth-narrow uppercase tracking-label text-[0.72rem] text-bone-dim">
+                  <a
+                    href={k.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline decoration-rule underline-offset-4 hover:text-bone hover:decoration-bone transition-colors"
+                  >
+                    {k.source}
+                  </a>
+                </p>
               </div>
             </li>
           ))}

@@ -40,6 +40,12 @@ export default function App() {
           <Route path="/history" element={<History />} />
         </Routes>
       </main>
+      <footer className="border-t border-rule px-4 sm:px-8 py-4">
+        <p className="text-[0.72rem] leading-snug text-bone-dim max-w-[64ch]">
+          Built for VTHacks 14, a student hackathon (September 2026). Not a certified or clinically
+          validated medical device. Decision-support demo only, not for use in actual patient care.
+        </p>
+      </footer>
     </div>
   );
 }

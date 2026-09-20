@@ -3,6 +3,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from ml.pipeline import run_pipeline
+from backend.app.services import gemini
 from backend.app.services.inference import save_to_demo_cache
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -23,8 +24,9 @@ for p in candidates:
 if match:
     p, b, result = match
     print(f"MATCH: {p} — {len(result.lesions)} lesions")
+    result.summary = gemini.summarize(result)
     save_to_demo_cache(b, result)
     (REPO_ROOT / "frontend/public/samples/cross-dataset.png").write_bytes(b)
-    print("Cached and copied.")
+    print("Cached (with summary) and copied.")
 else:
-    print("Zero detections across every file — check confidence threshold, preprocessing, or that this folder is actually skull-stripped/preprocessed the model expects.")
+    print("Zero detections across every file.")

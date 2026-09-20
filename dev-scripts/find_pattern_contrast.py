@@ -12,7 +12,7 @@ candidates = sorted(test_dir.glob("*.png")) + sorted(test_dir.glob("*.jpg"))
 
 print(f"Found {len(candidates)} candidate files in {test_dir}")
 
-best = None
+best = None  # (p, b, result, atypical_count) among mixed slices
 match = None
 
 for p in candidates:
@@ -21,23 +21,20 @@ for p in candidates:
     if not result.lesions:
         continue
     patterns = [l.pattern for l in result.lesions]
+    typical_count = patterns.count("ms_typical")
     atypical_count = patterns.count("atypical")
-    print(f"{p.name}: {len(result.lesions)} lesions, {atypical_count} atypical")
-    if atypical_count == 0:
-        match = (p, b, result)
-        break
-    if best is None or atypical_count < best[3]:
-        best = (p, b, result, atypical_count)
+    print(f"{p.name}: {len(result.lesions)} lesions, {typical_count} typical / {atypical_count} atypical")
+    if typical_count >= 1 and atypical_count >= 1:
+        # prefer a denser, more convincing mix
+        if best is None or len(result.lesions) > len(best[2].lesions):
+            best = (p, b, result, atypical_count)
 
-if match:
-    p, b, result = match
-    print(f"MATCH: {p} — {len(result.lesions)} lesions, all ms_typical")
+if best:
+    p, b, result, ac = best
+    print(f"MATCH: {p} — {len(result.lesions)} lesions, mixed pattern")
     result.summary = gemini.summarize(result)
     save_to_demo_cache(b, result)
-    (REPO_ROOT / "frontend/public/samples/clean-detection.png").write_bytes(b)
-    print("Cached (with summary) and copied.")
-elif best:
-    p, b, result, ac = best
-    print(f"No perfect match. Closest: {p} with {ac} atypical lesion(s) out of {len(result.lesions)}.")
+    (REPO_ROOT / "frontend/public/samples/pattern-contrast.png").write_bytes(b)
+    print("Cached (with summary) and copied — overwrote pattern-contrast.png.")
 else:
-    print("Zero files produced any lesion detections at all.")
+    print("No slice with both ms_typical and atypical lesions found.")

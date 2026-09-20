@@ -81,3 +81,39 @@ async def get_case(case_id: str) -> AnalysisResult | None:
         return None
     doc = {k: v for k, v in doc.items() if k != "_id"}
     return AnalysisResult.model_validate(doc)
+
+async def get_burden_trend(session_id: str, limit: int = 50) -> list[dict]:
+    col = _get_collection()
+    if col is not None:
+        try:
+            pipeline = [
+                {"$match": {"session_id": session_id}},
+                {"$sort": {"created_at": 1}},
+                {"$limit": limit},
+                {
+                    "$project": {
+                        "_id": 0,
+                        "case_id": 1,
+                        "created_at": 1,
+                        "lesion_count": "$burden.lesion_count",
+                        "total_area_pct": "$burden.total_area_pct",
+                        "atypical_count": "$burden.atypical_count",
+                    }
+                },
+            ]
+            return await col.aggregate(pipeline).to_list(length=limit)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("Mongo trend aggregation failed (%s); using memory", exc)
+
+    docs = [d for d in _memory.values() if d.get("session_id") == session_id]
+    docs.sort(key=lambda d: d["created_at"])
+    return [
+        {
+            "case_id": d["case_id"],
+            "created_at": d["created_at"],
+            "lesion_count": d["burden"]["lesion_count"],
+            "total_area_pct": d["burden"]["total_area_pct"],
+            "atypical_count": d["burden"]["atypical_count"],
+        }
+        for d in docs[:limit]
+    ]

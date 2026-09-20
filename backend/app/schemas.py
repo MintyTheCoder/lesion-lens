@@ -79,3 +79,17 @@ class DatasetValidation(BaseModel):
 class ValidationReport(BaseModel):
     datasets: list[DatasetValidation]
     note: str = ""
+
+
+class BurdenPoint(BaseModel):
+    case_id: str
+    created_at: datetime
+    lesion_count: int
+    total_area_pct: float
+    atypical_count: int
+
+
+class BurdenTrend(BaseModel):
+    session_id: str
+    points: list[BurdenPoint]
+    direction: Literal["rising", "stable", "falling", "insufficient_data"]

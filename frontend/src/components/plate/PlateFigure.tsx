@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { AnalysisResult, Lesion } from "../../api/types";
 import { LOCATION_LABEL, PATTERN_LABEL } from "../../brand";
 import { FRAME_CLASS, FrameFurniture, PlateCaption } from "./PlateFrame";
@@ -41,12 +41,21 @@ const LG = "(min-width: 1024px)";
 const NUMERAL_PX = 18;
 /** Above this many lesions the leaders would cross; the numerals on the boxes carry the link instead. */
 const MAX_LEADERS = 12;
+/** If the slice never reports load or error, the callouts draw anyway rather than holding the plate blank. */
+const READY_FALLBACK_MS = 1500;
+/** How much of the frame must be in the viewport before the plate starts labelling itself. */
+const IN_VIEW_THRESHOLD = 0.6;
 
 /**
  * An atlas plate: the slice is the figure, each lesion a numbered callout, and a hairline
  * leader runs from every box to its legend entry in the margin. Leaders are measured from
  * the DOM so they stay attached at any width; below `lg` the legend stacks and the numerals
  * on the boxes carry the link instead.
+ *
+ * Once the slice lands and the frame is scrolled into view, the plate labels itself, one
+ * callout at a time in legend order: box, tick, numeral, leader, then the legend entry as the
+ * leader reaches it. Timing lives in index.css under `.plate`; each element carries its legend
+ * index as `--i`.
  */
 export default function PlateFigure({
   result,
@@ -71,9 +80,48 @@ export default function PlateFigure({
   const active = hover ?? pinned;
 
   const [imgOk, setImgOk] = useState<boolean | null>(null);
+  /**
+   * The callout sequence starts once the slice has landed (or failed) and the frame has been
+   * scrolled into view, so the plate labels itself in front of the reader, never over an empty
+   * frame and never above the fold before they arrive. It plays once per plate.
+   */
+  const [landed, setLanded] = useState(false);
+  const [inView, setInView] = useState(false);
+  const ready = landed && inView;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setImgOk(null);
+    setLanded(false);
+  }, [imageSrc]);
+  useEffect(() => {
+    if (imgOk !== null) {
+      setLanded(true);
+      return;
+    }
+    const t = window.setTimeout(() => setLanded(true), READY_FALLBACK_MS);
+    return () => window.clearTimeout(t);
+  }, [imgOk, imageSrc]);
+  useEffect(() => {
+    const f = frameRef.current;
+    if (!f || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { threshold: IN_VIEW_THRESHOLD },
+    );
+    io.observe(f);
+    return () => io.disconnect();
+  }, [result.case_id]);
   const rowRefs = useRef(new Map<number, HTMLElement>());
   const [leaders, setLeaders] = useState<Leader[]>([]);
   const [box, setBox] = useState({ w: 0, h: 0 });
@@ -152,8 +200,11 @@ export default function PlateFigure({
 
   return (
     <div
+      key={result.case_id}
       ref={containerRef}
-      className="relative grid grid-cols-1 gap-y-8 lg:gap-x-16 lg:grid-cols-[minmax(0,1.5fr)_minmax(21rem,1fr)] lg:grid-rows-[auto_auto_1fr]"
+      className={`plate relative grid grid-cols-1 gap-y-8 lg:gap-x-16 lg:grid-cols-[minmax(0,1.5fr)_minmax(21rem,1fr)] lg:grid-rows-[auto_auto_1fr] ${
+        ready ? "plate-ready" : ""
+      }`}
     >
       {/* Margin: title */}
       <div className="lg:col-start-2 lg:row-start-1 order-1">{aside}</div>
@@ -187,23 +238,30 @@ export default function PlateFigure({
             role="img"
             aria-label={`${b.lesion_count} lesions boxed: ${b.ms_typical_count} MS-typical, ${b.atypical_count} atypical or nonspecific`}
           >
-            {ordered.map((l) => {
+            {ordered.map((l, i) => {
               const [x, y, w, h] = l.bbox;
               const color = PATTERN_HEX[l.pattern];
               const isActive = active === l.id;
               const faded = dimOthers && !isActive;
               const pad = u(3);
               const cy = y + h / 2;
+              // Dash lengths in image px for the draw-in. The box and tick deliberately do not use
+              // non-scaling-stroke: Chromium then applies dashes in screen space and the draw never
+              // lines up with the perimeter. Stroke width is held constant through u() instead.
+              const perimeter = 2 * (w + h + pad * 4);
+              const tick = u(8);
               return (
                 <g
                   key={l.id}
                   className="cursor-pointer transition-opacity duration-300 ease-out"
-                  style={{ opacity: faded ? 0.3 : 1 }}
+                  style={{ opacity: faded ? 0.3 : 1, "--i": i } as CSSProperties}
                   onMouseEnter={() => setHover(l.id)}
                   onMouseLeave={() => setHover(null)}
                   onClick={() => setPinned((p) => (p === l.id ? null : l.id))}
                 >
                   <rect
+                    className="callout-box"
+                    style={{ "--len": perimeter } as CSSProperties}
                     x={x - pad}
                     y={y - pad}
                     width={w + pad * 2}
@@ -211,20 +269,21 @@ export default function PlateFigure({
                     fill={isActive ? color : "transparent"}
                     fillOpacity={isActive ? 0.18 : 0}
                     stroke={color}
-                    strokeWidth={isActive ? 2 : 1.25}
-                    vectorEffect="non-scaling-stroke"
+                    strokeWidth={u(isActive ? 2 : 1.25)}
                   />
                   {/* numeral, left of the box on its centreline, joined by a short tick */}
                   <line
+                    className="callout-tick"
+                    style={{ "--len": tick } as CSSProperties}
                     x1={x - pad}
                     y1={cy}
-                    x2={x - pad - u(8)}
+                    x2={x - pad - tick}
                     y2={cy}
                     stroke={color}
-                    strokeWidth={1}
-                    vectorEffect="non-scaling-stroke"
+                    strokeWidth={u(1)}
                   />
                   <text
+                    className="callout-numeral"
                     x={x - pad - u(12)}
                     y={cy}
                     textAnchor="end"
@@ -265,12 +324,17 @@ export default function PlateFigure({
         {ordered.length === 0 && emptyLegend && (
           <li className="border-b border-rule py-5 text-[0.95rem] leading-relaxed text-bone-dim text-pretty">{emptyLegend}</li>
         )}
-        {ordered.map((l) => {
+        {ordered.map((l, i) => {
           const isActive = active === l.id;
           const faded = dimOthers && !isActive;
           const color = PATTERN_HEX[l.pattern];
           return (
-            <li key={l.id} ref={setRow(l.id)} className="border-b border-rule">
+            <li
+              key={l.id}
+              ref={setRow(l.id)}
+              className="legend-row relative border-b border-transparent"
+              style={{ "--i": i } as CSSProperties}
+            >
               <button
                 type="button"
                 aria-pressed={pinned === l.id}
@@ -278,8 +342,8 @@ export default function PlateFigure({
                 onFocus={() => setHover(l.id)}
                 onBlur={() => setHover(null)}
                 onClick={() => setPinned((p) => (p === l.id ? null : l.id))}
-                className="w-full text-left grid grid-cols-[2.5rem_minmax(0,1fr)_auto] gap-x-3 py-3.5 transition-opacity duration-300 ease-out"
-                style={{ opacity: faded ? 0.38 : 1 }}
+                className="legend-entry w-full text-left grid grid-cols-[2.5rem_minmax(0,1fr)_auto] gap-x-3 py-3.5 transition-opacity duration-300 ease-out"
+                data-faded={faded || undefined}
               >
                 <span className="tnum text-[1.5rem] leading-none font-medium">{numeral.get(l.id)}</span>
                 <span className="min-w-0">
@@ -324,19 +388,11 @@ export default function PlateFigure({
               <g
                 key={ld.id}
                 className="transition-opacity duration-300 ease-out"
-                style={{ opacity: faded ? 0.25 : 1 }}
+                style={{ opacity: faded ? 0.25 : 1, "--i": i } as CSSProperties}
               >
-                <path
-                  d={ld.d}
-                  pathLength={1}
-                  className="leader"
-                  fill="none"
-                  stroke={stroke}
-                  strokeWidth={isActive ? 1.25 : 1}
-                  style={{ animationDelay: `${i * 60}ms` }}
-                />
+                <path d={ld.d} pathLength={1} className="leader" fill="none" stroke={stroke} strokeWidth={isActive ? 1.25 : 1} />
                 {/* terminal at the box end */}
-                <circle cx={ld.tx} cy={ld.ty} r={2} fill={stroke} />
+                <circle className="leader-terminal" cx={ld.tx} cy={ld.ty} r={2} fill={stroke} />
               </g>
             );
           })}

@@ -80,7 +80,7 @@ export default function CaseView({ result, action, caption }: Props) {
           emptyLegend={
             atypicalOnly
               ? "No atypical or nonspecific lesions in this slice."
-              : "No white-matter lesions were detected in this slice. The plate is kept as a documented negative read."
+              : "No white-matter lesions were detected in this slice."
           }
           caption={
             <>

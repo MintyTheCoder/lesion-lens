@@ -25,8 +25,7 @@ function describeFailure(e: unknown): { message: string; retryable: boolean } {
   const status = Number.parseInt(text, 10);
   if (status === 503) {
     return {
-      message:
-        "The model service did not respond, and this slice is not in the rehearsed set. Check the connection and try again, or start from a rehearsed slice.",
+      message: "The detection service is unreachable. Check your connection and try again, or use one of the sample slices below.",
       retryable: true,
     };
   }
@@ -129,7 +128,7 @@ export default function Analyze() {
       const name = s.file.split("/").pop() ?? "sample.png";
       submit(new File([blob], name, { type: blob.type || "image/png" }));
     } catch {
-      setPhase({ kind: "idle", rejection: "That rehearsed slice could not be loaded." });
+      setPhase({ kind: "idle", rejection: "That sample slice could not be loaded." });
     }
   };
 
@@ -196,7 +195,7 @@ export default function Analyze() {
               {phase.kind === "idle" && (
                 <>
                   <h2 className="wdth-wide text-balance font-medium tracking-plate leading-[1.06] text-[clamp(1.55rem,2.05vw,2.15rem)]">
-                    Drop a FLAIR slice into the frame, or start from a rehearsed one.
+                    Drop a FLAIR slice into the frame, or start from a sample one.
                   </h2>
                   <p className="mt-5 text-pretty text-[0.95rem] leading-relaxed text-bone-dim max-w-[44ch]">
                     The read takes a few seconds. What comes back: every lesion boxed and numbered, the lesion burden,
@@ -266,7 +265,7 @@ export default function Analyze() {
               </PlateCaption>
             </figure>
 
-            {/* Margin list: a rejection, then the rehearsed slices */}
+            {/* Margin list: a rejection, then the sample slices */}
             <div className="lg:col-start-2 lg:row-start-2 order-3 self-start">
               {phase.kind === "idle" && phase.rejection && (
                 <p role="alert" className="border-t border-rule pt-4 pb-5 text-[0.95rem] leading-relaxed text-pretty max-w-[44ch]">
@@ -304,13 +303,13 @@ interface SampleListProps {
   onPick: (s: SampleSlice) => void;
 }
 
-/** The rehearsed slices as a ruled list, numbered like a legend. Doubles as the offline path via the demo cache. */
+/** The sample slices as a ruled list, numbered like a legend. Doubles as the offline path via the demo cache. */
 function SampleList({ samples, dimmed, onPick }: SampleListProps) {
   if (samples === null) return null;
   if (samples.length === 0) {
     return (
       <p className="border-t border-rule pt-4 text-[0.85rem] leading-snug text-bone-faint max-w-[44ch] text-pretty">
-        No rehearsed slices yet. Place them in frontend/public/samples (see the README there) and they will be listed
+        No sample slices yet. Place them in frontend/public/samples (see the README there) and they will be listed
         here.
       </p>
     );
@@ -321,7 +320,7 @@ function SampleList({ samples, dimmed, onPick }: SampleListProps) {
       aria-hidden={dimmed}
     >
       <h3 className="wdth-narrow uppercase tracking-label text-[0.72rem] leading-none text-bone-dim mb-3">
-        Rehearsed slices
+        Sample slices
       </h3>
       <ol className="border-t border-rule">
         {samples.map((s, i) => (

@@ -4,6 +4,10 @@
 
 MS is misdiagnosed ~18% of the time, and the most common mimic is migraine. The root cause is over-calling nonspecific white-matter lesions as MS. This is decision support for a doctor's second look — never shown to a patient, never a standalone diagnosis.
 
+## Status
+
+End-to-end and working: a trained RF-DETR-B model is live on Roboflow, the heuristic pattern layer is implemented, cross-dataset validation has run for real (see numbers below, not placeholders), and the backend + frontend (landing page, upload flow, history, validation panel) all work together. Remaining before judging: the Phase 7 checklist in `CLAUDE.md` §6 — spot-checking the pattern layer against real (not synthetic) detections, and confirming `GEMINI_API_KEY`/`MONGODB_URI` are live for the actual demo rather than running on mock/fallback.
+
 ## Team
 
 | Person | Owns | Branch |
@@ -26,15 +30,17 @@ There is **no migraine-patient data** in MS3SEG or MSLesSeg. The pattern flag ap
 ```
  data/                          ml/                                backend/              frontend/
  ─────                          ───                                ────────              ─────────
- MS3SEG NIfTI ──► slices ──►  Roboflow project ──► RF-DETR-B     POST /analyze ──────► ScanViewer
- masks ──► boxes ──► COCO      (hosted train)      (hosted API)   ├─ ml.pipeline         BurdenCard
-                                     │                  │         ├─ Gemini summary      LesionTable
- MSLesSeg (sealed) ─► mslesseg_ ─► validate.py ◄───────────┘         ├─ MongoDB save        SummaryCard
-                       eval_prep       │                            GET /validation ─────► ValidationPanel
+ MS3SEG NIfTI ──► slices ──►  Roboflow project ──► RF-DETR-B     POST /analyze ──────► PlateFigure
+ masks ──► boxes ──► COCO      (hosted train)      (hosted API)   ├─ ml.pipeline         (box overlay)
+                                     │                  │         ├─ Gemini summary      CaseView
+ MSLesSeg (sealed) ─► mslesseg_ ─► validate.py ◄───────────┘         ├─ MongoDB save        ├─ FindingsNote
+                       eval_prep       │                            GET /validation ─────► └─ ValidationTable
                                        └──► results/validation.json
 ```
 
 Preprocessing (normalize → CLAHE → resize/pad) lives in `data/pipeline/pipeline_ms3seg.py` — that's the pipeline actually deployed to Roboflow, and `ml/pipeline.py` (live inference) and `data/pipeline/mslesseg_eval_prep.py` (MSLesSeg conversion) both import it. `data/scripts/` is a separate, unfinished attempt at the same thing — nothing has been exported or uploaded through it, so don't treat it as canonical.
+
+The frontend also has a `Landing.tsx` page (now `/`, not in the original plan) and a "load a sample" path (`frontend/public/samples/` + `frontend/src/samples.ts`) that shows the 3 rehearsed demo cases without needing an upload — paired with `backend/app/fixtures/demo_cache/`, which has those same 3 scans precomputed for offline/Wi-Fi-down fallback.
 
 **The one integration point:** `ml/pipeline.py:run_pipeline(image_bytes) -> AnalysisResult`. The shape of `AnalysisResult` is defined once in `backend/app/schemas.py` and mirrored in `frontend/src/api/types.ts`. If you change the schema, change both files + `backend/app/fixtures/mock_analysis.json` in the same PR.
 
@@ -76,6 +82,13 @@ python -m ml.validate
 ```
 
 `data.pipeline.mslesseg_eval_prep` reuses the same preprocessing/box-extraction as MS3SEG (`data/pipeline/pipeline_ms3seg.py`, the pipeline actually deployed to Roboflow) so predictions and ground truth land in the same coordinate space. It only needs to be run once (or again if `data/raw/MSLesSeg Dataset/` changes) — its output, `data/processed/mslesseg_dataset/test/`, is what `ml/validate.py` reads.
+
+Current snapshot in `ml/results/validation.json` (re-run after any retrain or heuristics change — this will drift):
+
+| Dataset | Scans | Precision | Recall | FP/scan | Flagged atypical |
+|---|---|---|---|---|---|
+| MS3SEG (held-out test) | 45 | 0.770 | 0.728 | 1.42 | 43% |
+| MSLesSeg (never trained on) | 100 | 0.446 | 0.485 | 2.14 | 65% |
 
 ## Env vars
 

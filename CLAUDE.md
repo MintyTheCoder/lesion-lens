@@ -80,26 +80,26 @@ Both public, no access request. Do not scrape MRI images from any other source. 
 
 ## 6. Build Steps
 
-**Phase 1 — Data pipeline**
-Acquire both datasets → load NIfTI volumes with `nibabel` → masks to boxes via connected components → OpenCV preprocessing → export COCO, upload to Roboflow → split train/val, keep MSLesSeg sealed.
+**Phase 1 — Data pipeline · DONE**
+Acquire both datasets → load NIfTI volumes with `nibabel` → masks to boxes via connected components → OpenCV preprocessing → export COCO, upload to Roboflow → split train/val, keep MSLesSeg sealed. Ran through `data/pipeline/` (not the originally-planned `data/scripts/`, which never got finished — see section 13). MS3SEG exported to `data/processed/ms3seg_dataset/{train,valid,test}`; MSLesSeg converted separately by `data/pipeline/mslesseg_eval_prep.py` into `data/processed/mslesseg_dataset/test/`, pooling its raw `train/`+`test/` folders since 100% of it is validation here regardless of MSLesSeg's own internal split. Uploaded to Roboflow via `ml/finetune.py` (misleadingly named — it's the upload script, not local training).
 
-**Phase 2 — Model training**
-Fine-tune RF-DETR-B from pretrained checkpoint; confirm the pipeline runs on a small subset first. Checkpoint by **validation precision, not accuracy**. Wrap in an inference function (scan → boxes + confidence + count/area). Confirm latency is demo-fast.
+**Phase 2 — Model training · DONE**
+Fine-tune RF-DETR-B from pretrained checkpoint; confirm the pipeline runs on a small subset first. Checkpoint by **validation precision, not accuracy**. Wrap in an inference function (scan → boxes + confidence + count/area). Confirm latency is demo-fast. A trained model is live on Roboflow (`ROBOFLOW_MODEL_ID` set); `ml/inference.py::detect()` calls it.
 
-**Phase 3 — Heuristic pattern layer**
-Extract geometric features per detected lesion (orientation/elongation vs. ventricles, periventricular vs. subcortical, shape). Build the rule-based MS-typical/atypical classifier — feature-engineered, not separately trained, since there's no labeled migraine data. Integrate flags into inference output.
+**Phase 3 — Heuristic pattern layer · DONE**
+Extract geometric features per detected lesion (orientation/elongation vs. ventricles, periventricular vs. subcortical, shape). Build the rule-based MS-typical/atypical classifier — feature-engineered, not separately trained, since there's no labeled migraine data. Integrate flags into inference output. `ml/heuristics.py::score_lesion`/`classify_pattern` implemented; thresholds tunable at the top of the file. Per the Phase 7 checklist below, still needs a by-eye spot-check against real (not synthetic) detections.
 
-**Phase 4 — Cross-dataset validation**
-One batch script: trained model + heuristic layer over MSLesSeg. Compute precision and per-scan false-positive rate on both held-out MS3SEG and MSLesSeg. Log to a table — this is the validation panel and the strongest demo moment.
+**Phase 4 — Cross-dataset validation · DONE**
+One batch script: trained model + heuristic layer over MSLesSeg. Compute precision and per-scan false-positive rate on both held-out MS3SEG and MSLesSeg. Log to a table — this is the validation panel and the strongest demo moment. `python -m ml.validate` runs for real against the live model; `ml/results/validation.json` holds real numbers, not placeholders (see section 13 for the current snapshot). Raw detections are cached to disk (`ml/results/detection_cache/`) so re-scoring after a heuristics change doesn't re-hit Roboflow's free-tier API.
 
-**Phase 5 — Backend + Gemini**
-One FastAPI/Flask endpoint: upload → inference → JSON (detections + flags + burden). Feed into Gemini for plain-language explanation using Section 4 phrasing exactly. MongoDB Atlas for case metadata, results, flags, explanation.
+**Phase 5 — Backend + Gemini · DONE**
+One FastAPI/Flask endpoint: upload → inference → JSON (detections + flags + burden). Feed into Gemini for plain-language explanation using Section 4 phrasing exactly. MongoDB Atlas for case metadata, results, flags, explanation. `POST /analyze`, `GET /cases`/`GET /cases/{id}`, `GET /validation` all implemented; Gemini summary hard-codes the section 4 honesty line in its system prompt with a template fallback; Mongo save has an in-memory fallback. Per the Phase 7 checklist, confirm real keys are live before the actual demo — `USE_MOCK_INFERENCE`/fallbacks are dev conveniences.
 
-**Phase 6 — Frontend**
-Upload flow → annotated image color-coded by pattern flag, count/area summary, Gemini explanation → validation panel front and center. Polish last.
+**Phase 6 — Frontend · DONE (polish ongoing)**
+Upload flow → annotated image color-coded by pattern flag, count/area summary, Gemini explanation → validation panel front and center. Polish last. Landing page, Analyze flow, and History page all exist; results UI was restructured into `case/` (CaseView, BurdenKey, FindingsNote, ValidationTable) and `plate/` (PlateFrame/PlateFigure/PlateAction/PlateIntake) component groups — see section 13 for the current tree, since it no longer matches the original ScanViewer/BurdenCard component names this brief originally sketched.
 
 **Phase 7 — Integration + rehearsal**
-End-to-end test on several real scans. Pick 2–3 demo cases: one clean detection, one clear pattern-flag contrast, one cross-dataset. Rehearse the 4-minute pitch timed, with the Section 4 answer verbatim.
+End-to-end test on several real scans. Pick 2–3 demo cases: one clean detection, one clear pattern-flag contrast, one cross-dataset. Rehearse the 4-minute pitch timed, with the Section 4 answer verbatim. The 3 demo cases are already picked and wired up (`frontend/public/samples/` + `backend/app/fixtures/demo_cache/`: `clean-detection`, `pattern-contrast`, `cross-dataset`) — what's left is the checklist below and the timed rehearsal itself.
 
 Checklist before calling this phase done:
 
@@ -244,18 +244,43 @@ ValUnited/
 │
 ├── ml/                           ── MODEL + HEURISTICS + VALIDATION ─────────────────────
 │   ├── README.md                 briefing: Roboflow training, feature defs, rule set, demo cache
-│   ├── inference.py              WORKS. httpx POST to Roboflow hosted API → RawDetection list
-│   ├── heuristics.py             TODO score_lesion(), classify_pattern(). Thresholds at top.
-│   ├── burden.py                 TODO brain_area_px(). compute_burden() done.
+│   ├── inference.py              WORKS. httpx POST to Roboflow hosted API → RawDetection list.
+│   │                             A trained model is live (ROBOFLOW_MODEL_ID set) — this is a
+│   │                             real network call now, not a stub.
+│   ├── heuristics.py             DONE. score_lesion() (skimage regionprops -> elongation/
+│   │                             ovoid_score/orientation_deg/location) + classify_pattern()
+│   │                             (the rule set below). Thresholds tunable at top of file.
+│   │                             Still open: _is_radial()'s angle math is a reasoned
+│   │                             approximation, not yet visually verified against real
+│   │                             detections — see the Phase 7 checklist.
+│   ├── burden.py                 DONE. brain_area_px() (threshold, fill holes, largest
+│   │                             component) + compute_burden().
+│   ├── finetune.py               Misleadingly named — this is the Roboflow UPLOAD script
+│   │                             (rf.workspace("samuel-sleshi").project("ms-lesion-detection")
+│   │                             .upload(...) over processed/ms3seg_dataset/{train,valid,test}),
+│   │                             not local model training. Loads its OWN ml/.env (via
+│   │                             python-dotenv), separate from the repo-root .env everything
+│   │                             else reads — easy to miss when rotating keys.
 │   ├── pipeline.py               run_pipeline(bytes) -> AnalysisResult   ← THE INTEGRATION POINT
 │   │                             Preprocesses via data/pipeline/pipeline_ms3seg.py (256×256,
 │   │                             min-max norm) to match what's actually deployed on Roboflow.
-│   ├── validate.py               WORKS. `python -m ml.validate` — scores the trained model
+│   ├── validate.py               DONE. `python -m ml.validate` — scores the trained model
 │   │                             against MS3SEG test + MSLesSeg via greedy IoU box matching
-│   │                             (0.3). Needs ROBOFLOW_API_KEY + ROBOFLOW_MODEL_ID in .env;
-│   │                             MSLesSeg needs data/pipeline/mslesseg_eval_prep.py run once
-│   │                             first. Writes results/validation.json.
-│   └── results/validation.json   placeholder zeros until validate.py is run for real; served by GET /validation
+│   │                             (0.3), confidence-sorted. Needs ROBOFLOW_API_KEY +
+│   │                             ROBOFLOW_MODEL_ID in .env; MSLesSeg needs
+│   │                             data/pipeline/mslesseg_eval_prep.py run once first. Caches
+│   │                             raw detections to results/detection_cache/<sha256>.json so
+│   │                             re-scoring after a heuristics tune doesn't re-hit Roboflow's
+│   │                             free tier (--no-cache to force a fresh run). Writes
+│   │                             results/validation.json.
+│   └── results/
+│       ├── validation.json       REAL numbers now, not placeholders (snapshot from the last
+│       │                         run — re-run after any retrain/heuristics change; served by
+│       │                         GET /validation): MS3SEG held-out test, 45 scans, precision
+│       │                         0.770, recall 0.728, 1.42 FP/scan, 43% flagged atypical;
+│       │                         MSLesSeg (never trained on), 100 scans, precision 0.446,
+│       │                         recall 0.485, 2.14 FP/scan, 65% flagged atypical.
+│       └── detection_cache/      (gitignored) cached raw Roboflow predictions, see validate.py
 │
 ├── backend/                      ── FASTAPI ────────────────────────────────────────────
 │   ├── README.md                 endpoints, inference resolution order, degradation
@@ -273,27 +298,45 @@ ValUnited/
 │   │   │   └── db.py             motor (Atlas) with in-memory fallback
 │   │   └── fixtures/
 │   │       ├── mock_analysis.json     what /analyze returns when USE_MOCK_INFERENCE=1
-│   │       └── demo_cache/<sha256>.json  precomputed results for rehearsed demo scans
+│   │       └── demo_cache/            POPULATED — 3 real rehearsed scans cached (README.md
+│   │                                  inside explains the convention), keyed by <sha256>.json
 │   └── tests/test_analyze.py     5 smoke tests in mock mode. `pytest backend/tests`
 │
-└── frontend/                     ── REACT + VITE + TAILWIND ────────────────────────────
-    ├── README.md                 pages, components, polish TODOs
+└── frontend/                     ── REACT + VITE + TAILWIND ──────────────────────────── DONE
+    ├── README.md  FLOW.md        pages/components briefing; FLOW.md is newer UX-flow notes
     ├── package.json  vite.config.ts (proxies /api → :8000)  tailwind.config.ts  tsconfig.json
     ├── index.html
+    ├── public/
+    │   ├── plate/                 hero-slice.png + README - the landing page's hero image
+    │   └── samples/                clean-detection.png, pattern-contrast.png, cross-dataset.png
+    │                               — the 3 rehearsed demo cases from Phase 7, viewable with no
+    │                               upload needed; paired with backend's demo_cache above
     └── src/
-        ├── main.tsx  App.tsx     router + header with the "decision support" line
+        ├── main.tsx  App.tsx     router (`/`, `/analyze`, `/history`) + header
+        ├── brand.ts              PRODUCT_NAME / DESCRIPTOR constants used in the header
+        ├── samples.ts            wires public/samples/* into the "Load sample" UI
         ├── api/
         │   ├── types.ts          mirrors schemas.py
         │   └── client.ts         analyze(file), getCases(), getCase(id), getValidation()
-        ├── mocks/analysis.json   copy of the backend fixture; "Load mock result" button uses it
-        ├── components/
+        ├── mocks/                analysis.json (backend fixture copy) + hero.json (landing page)
+        ├── components/            NOTE: original names (ScanViewer/BurdenCard) were replaced
+        │   │                      by the case/ and plate/ groups below during Phase 6.
         │   ├── UploadDropzone.tsx
-        │   ├── ScanViewer.tsx    <img> + <svg viewBox> overlay; orange = MS-typical, sky = atypical
         │   ├── LesionTable.tsx   click row ↔ viewer selection
-        │   ├── BurdenCard.tsx    count / % burden / typical / atypical
         │   ├── SummaryCard.tsx   Gemini text + fixed "not a diagnosis" line
-        │   └── ValidationPanel.tsx  GET /validation table
+        │   ├── ValidationPanel.tsx  GET /validation table
+        │   ├── case/              results-display components (the old ScanViewer/BurdenCard role)
+        │   │   ├── CaseView.tsx       top-level results layout for one AnalysisResult
+        │   │   ├── BurdenKey.tsx      legend for the pattern-flag color coding
+        │   │   ├── FindingsNote.tsx   renders the Gemini summary
+        │   │   └── ValidationTable.tsx
+        │   └── plate/              shared "scan on a plate" visual frame, used by Landing + Analyze
+        │       ├── PlateFrame.tsx
+        │       ├── PlateFigure.tsx    <img> + <svg viewBox> box overlay; orange = MS-typical, sky = atypical
+        │       ├── PlateAction.tsx
+        │       └── PlateIntake.tsx    upload/sample-select entry point
         └── pages/
+            ├── Landing.tsx       NEW (not in the original plan) - marketing/hero page, now `/`
             ├── Analyze.tsx       upload → results layout
             └── History.tsx       saved cases from Mongo
 ```
@@ -304,4 +347,5 @@ ValUnited/
 - `ValUnited/.venv` already exists at the repo root, built from `requirements.txt` — activate it rather than creating a new one, unless you're on a fresh clone.
 - `USE_MOCK_INFERENCE=1` (the default) makes the whole app work with no keys and no model. Every integration degrades gracefully: no Gemini key → template summary; no Mongo URI → in-memory store.
 - `data/pipeline/pipeline_ms3seg.py` — not `data/scripts/preprocess.py`, which is unfinished and unused — is the preprocessing actually shared between the exported training set and inference (`ml/pipeline.py`), and also used by `data/pipeline/mslesseg_eval_prep.py`. If train and inference preprocessing drift, the model silently degrades.
-- Before judging: populate `backend/app/fixtures/demo_cache/` via `save_to_demo_cache()` for each rehearsed slice (see `ml/README.md` step 4).
+- `ml/finetune.py` (the Roboflow upload script) reads its own `ml/.env`, separate from the repo-root `.env` every other script and the backend read via `backend/app/config.py`. Both are gitignored; keep `ROBOFLOW_API_KEY` in sync between them if you rotate it.
+- Demo cache: `backend/app/fixtures/demo_cache/` already has 3 rehearsed scans committed (paired with `frontend/public/samples/`). Re-populate via `save_to_demo_cache()` (see `ml/README.md` step 4) if the demo cases change or the model gets retrained.

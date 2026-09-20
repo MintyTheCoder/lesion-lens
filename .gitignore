@@ -13,7 +13,9 @@ data/raw/
 *.nii.gz
 *.pth
 *.zip
-test_*
+# debug output from data/pipeline/test_pipeline_*.py - NOT the scripts themselves
+# ("test_*" alone would also match tracked test_*.py sources, e.g. backend/tests/test_analyze.py)
+test_*.png
 data/processed
 mslesseg_dataset
 
